@@ -11,7 +11,6 @@ export type Event = {
   registration_fee: number;
   commisioner: string;
   race_director: string;
-  start: string;
 };
 export type EventResponse = {
   message: string;

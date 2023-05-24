@@ -91,13 +91,13 @@ export default function AddEvent() {
         checked={modal}
         onChange={handleChange}
         className="modal-toggle"
-        id="my-modal-3"
+        id="add-event-modal"
       />
 
       <div className="modal">
         <div className="modal-box w-11/12 max-w-5xl">
           <label
-            htmlFor="my-modal-3"
+            htmlFor="add-event-modal"
             className="btn btn-sm btn-circle absolute right-2 top-2"
           >
             ✕
@@ -112,6 +112,7 @@ export default function AddEvent() {
                   </label>
                   <div className="mt-2">
                     <input
+                      required={true}
                       type="text"
                       name="name"
                       id="event-name"
@@ -127,6 +128,7 @@ export default function AddEvent() {
                   </label>
                   <div className="mt-2">
                     <input
+                      required={true}
                       type="text"
                       name="location"
                       id="event-location"
@@ -204,6 +206,7 @@ export default function AddEvent() {
                   </label>
                   <div className="mt-2">
                     <input
+                      required={true}
                       type="datetime-local"
                       name="start"
                       id="event-start-date"
@@ -219,6 +222,7 @@ export default function AddEvent() {
                   </label>
                   <div className="mt-2">
                     <input
+                      required={true}
                       type="datetime-local"
                       name="end"
                       id="event-end-date"

@@ -3,7 +3,7 @@
 import { SyntheticEvent, useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { EventResponse } from "@/services/events/data-type";
-import { getEvents } from "@/services/events";
+import { getEvents, getEventsWithCaching } from "@/services/events";
 
 const dateTimeToUnix = (datetime: string) => {
   const date = new Date(datetime);
@@ -30,7 +30,7 @@ export default function AddEvent() {
   const router = useRouter();
 
   const getEventList = useCallback(async () => {
-    const data = await getEvents();
+    const data = await getEventsWithCaching();
     setEvents(data);
   }, [getEvents]);
 
@@ -108,13 +108,13 @@ export default function AddEvent() {
         checked={modal}
         onChange={handleChange}
         className="modal-toggle"
-        id="my-modal-3"
+        id="add-category-modal"
       />
 
       <div className="modal">
         <div className="modal-box w-11/12 max-w-5xl">
           <label
-            htmlFor="my-modal-3"
+            htmlFor="add-category-modal"
             className="btn btn-sm btn-circle absolute right-2 top-2"
           >
             ✕
@@ -124,28 +124,29 @@ export default function AddEvent() {
             <div className="border-b border-gray-900/10 pb-12">
               <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                 <div className="sm:col-span-3">
-                  <label htmlFor="event-name" className="label-text">
+                  <label htmlFor="category-name" className="label-text">
                     Category Name
                   </label>
                   <div className="mt-2">
                     <input
                       type="text"
                       name="name"
-                      id="event-name"
+                      id="category-name"
                       className="input input-bordered w-full"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
+                      required={true}
                     />
                   </div>
                 </div>
                 <div className="sm:col-span-3">
-                  <label htmlFor="event-description" className="label-text">
+                  <label htmlFor="category-description" className="label-text">
                     Description{" "}
                   </label>
                   <div className="mt-2">
                     <textarea
                       name="description"
-                      id="event-description"
+                      id="category-description"
                       className="textarea textarea-bordered w-full"
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
@@ -154,18 +155,19 @@ export default function AddEvent() {
                 </div>
 
                 <div className="sm:col-span-3">
-                  <label htmlFor="event-commisioner" className="label-text">
+                  <label htmlFor="category-sex" className="label-text">
                     Sex
                   </label>
                   {/* <div className="mt-2"> */}
                   <label className="label cursor-pointer ">
                     <span className="label-text">Man</span>
                     <input
+                      required={true}
                       type="radio"
                       name="radio-10"
-                      className="radio checked:bg-red-500"
-                      checked={sex == "Men" && true}
-                      onChange={() => handleRadioButton("Men")}
+                      className="radio checked:bg-red"
+                      checked={sex == "Man" && true}
+                      onChange={() => handleRadioButton("Man")}
                     />
                   </label>
                   <label className="label cursor-pointer">
@@ -173,7 +175,7 @@ export default function AddEvent() {
                     <input
                       type="radio"
                       name="radio-10"
-                      className="radio checked:bg-blue-500"
+                      className="radio checked:bg-blue"
                       checked={sex == "Woman" && true}
                       onChange={() => handleRadioButton("Woman")}
                     />
@@ -183,7 +185,7 @@ export default function AddEvent() {
                     <input
                       type="radio"
                       name="radio-10"
-                      className="radio checked:bg-blue-500"
+                      className="radio checked:bg-blue"
                       checked={sex == "Mix" && true}
                       onChange={() => handleRadioButton("Mix")}
                     />
@@ -201,6 +203,7 @@ export default function AddEvent() {
                   <div className="mt-2">
                     <div className="input-group">
                       <select
+                        required={true}
                         className="select select-bordered w-full"
                         onChange={handleSelect}
                         defaultValue={"pickone"}
@@ -223,6 +226,7 @@ export default function AddEvent() {
                   </label>
                   <div className="mt-2">
                     <input
+                      required={true}
                       type="datetime-local"
                       name="start"
                       id="event-start-date"
@@ -238,6 +242,7 @@ export default function AddEvent() {
                   </label>
                   <div className="mt-2">
                     <input
+                      required={true}
                       type="datetime-local"
                       name="end"
                       id="event-end-date"

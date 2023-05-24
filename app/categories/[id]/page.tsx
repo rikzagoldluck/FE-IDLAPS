@@ -1,8 +1,9 @@
 import Navbar from "@/components/Navbar";
-import { Event } from "@/services/events/data-type";
+import { Category } from "@/services/categories/data-type";
+import Form from "./Form";
 
 export const metadata = {
-  title: "Event Detail",
+  title: "Category Edit",
 };
 
 // export async function generateStaticParams() {
@@ -15,28 +16,27 @@ export const metadata = {
 // }));
 // }
 
-export default async function EventDetail({
+export default async function CategoryEdit({
   params,
 }: {
-  params: { idEvent: number };
+  params: { id: number };
 }) {
-  const { idEvent } = params;
-  const res = await fetch(`http://localhost:3001/events/${idEvent}`);
+  const { id } = params;
+  const res = await fetch(`http://localhost:3001/categories/${id}`, {
+    cache: "no-store",
+  });
   const resBody = await res.json();
-
-  // console.log(res);
-  console.log(resBody);
 
   if (!res.ok) {
     alert(`Something went wrong : ${resBody.message}`);
     return;
   }
-  const event: Event = resBody.data;
-  // console.log(event);
+  const category: Category = resBody.data;
 
   return (
     <>
-      <Navbar title={"event"} />
+      <Navbar title={"category"} />
+      <Form category={category} />
     </>
   );
 }

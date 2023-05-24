@@ -3,7 +3,7 @@ import { Event } from "@/services/events/data-type";
 import Form from "./Form";
 
 export const metadata = {
-  title: "Event Detail",
+  title: "Event Edit",
 };
 
 // export async function generateStaticParams() {
@@ -16,18 +16,16 @@ export const metadata = {
 // }));
 // }
 
-export default async function EventDetail({
+export default async function EventEdit({
   params,
 }: {
   params: { id: number };
 }) {
   const { id } = params;
-  const res = await fetch(`http://localhost:3001/events/${id}`);
+  const res = await fetch(`http://localhost:3001/events/${id}`, {
+    cache: "no-store",
+  });
   const resBody = await res.json();
-
-  // console.log(res);
-  console.log(resBody);
-
   if (!res.ok) {
     alert(`Something went wrong : ${resBody.message}`);
     return;

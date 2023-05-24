@@ -1,9 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { SyntheticEvent, useEffect, useState } from "react";
+import { SyntheticEvent, useState } from "react";
 import type { Event } from "@/services/events/data-type";
-
 const dateTimeToUnix = (datetime: string) => {
   const date = new Date(datetime);
 
@@ -12,34 +11,28 @@ const dateTimeToUnix = (datetime: string) => {
 
 const unixToInput = (unix: number) => {
   // Membuat objek Date dari UNIX timestamp (dalam milidetik)
-  // const date = new Date(unix * 1000);
+  const date = new Date(unix * 1000);
 
   // Mendapatkan tanggal dan waktu dalam format "YYYY-MM-DDTHH:mm"
-  // return date.toISOString().slice(0, 16);
-  return unix;
+  return date.toISOString().slice(0, 16);
 };
 
 export default function Form({ event }: { event: Event }) {
-  useEffect(() => {
-    console.log(event);
-    return;
-  }, []);
   const [name, setName] = useState(event.name);
   const [location, setLocation] = useState(event.location);
-  const [desc1, setDesc1] = useState(event.desc_1);
-  const [desc2, setDesc2] = useState(event.desc_2);
-  const [start, setStart] = useState(event.start_datetime);
-  const [end, setEnd] = useState(event.end_datetime);
+  const [desc_1, setDesc1] = useState(event.desc_1);
+  const [desc_2, setDesc2] = useState(event.desc_2);
+  const [start, setStart] = useState(unixToInput(event.start_datetime));
+  const [end, setEnd] = useState(unixToInput(event.end_datetime));
   const [distance, setDistance] = useState(event.distance);
   const [type, setType] = useState(event.type);
-  const [regisFee, setRegisFee] = useState(event.registration_fee);
-  const [comm, setComm] = useState(event.commisioner);
-  const [rd, setRD] = useState(event.race_director);
+  const [registration_fee, setRegisFee] = useState(event.registration_fee);
+  const [commisioner, setComm] = useState(event.commisioner);
+  const [race_director, setRD] = useState(event.race_director);
 
   const [isMutating, setIsMutating] = useState(false);
 
   const router = useRouter();
-
   async function handleUpdate(e: SyntheticEvent) {
     e.preventDefault();
 
@@ -53,23 +46,29 @@ export default function Form({ event }: { event: Event }) {
       body: JSON.stringify({
         name,
         location,
-        desc_1: desc1,
-        desc_2: desc2,
-        start_datetime: start,
-        end_datetime: end,
-        commisioner: comm,
-        race_director: rd,
+        desc_1,
+        desc_2,
+        commisioner,
+        race_director,
         distance,
         type,
-        registration_fee: regisFee,
+        registration_fee,
+        start_datetime:
+          typeof start === "number" ? start : dateTimeToUnix(start),
+        end_datetime: typeof end === "number" ? end : dateTimeToUnix(end),
       }),
     });
 
-    // const data = await res.json();
-    if (res.ok) {
+    if (!res.ok) {
       setIsMutating(false);
-      router.push("/events");
+      const resBody = await res.json();
+      alert(`Something went wrong : ${resBody.message}`);
+      return;
     }
+
+    setIsMutating(false);
+    router.push("/events");
+    router.refresh();
   }
 
   return (
@@ -95,6 +94,7 @@ export default function Form({ event }: { event: Event }) {
               </label>
               <div className="mt-2">
                 <input
+                  required={true}
                   type="text"
                   name="name"
                   id="event-name"
@@ -110,6 +110,7 @@ export default function Form({ event }: { event: Event }) {
               </label>
               <div className="mt-2">
                 <input
+                  required={true}
                   type="text"
                   name="location"
                   id="event-location"
@@ -126,11 +127,11 @@ export default function Form({ event }: { event: Event }) {
               </label>
               <div className="mt-2">
                 <textarea
-                  name="desc1"
+                  name="desc_1"
                   id="event-descriptin1"
                   className="w-full textarea textarea-bordered h-24"
                   placeholder="Description 1"
-                  value={desc1}
+                  value={desc_1}
                   onChange={(e) => setDesc1(e.target.value)}
                 ></textarea>
               </div>
@@ -141,11 +142,11 @@ export default function Form({ event }: { event: Event }) {
               </label>
               <div className="mt-2">
                 <textarea
-                  name="desc2"
+                  name="desc_2"
                   id="event-description2"
                   className="w-full textarea textarea-bordered h-24"
                   placeholder="Description 2"
-                  value={desc2}
+                  value={desc_2}
                   onChange={(e) => setDesc2(e.target.value)}
                 ></textarea>
               </div>
@@ -161,7 +162,7 @@ export default function Form({ event }: { event: Event }) {
                   name="commisioner"
                   id="event-commisioner"
                   className="input input-bordered w-full"
-                  value={comm}
+                  value={commisioner}
                   onChange={(e) => setComm(e.target.value)}
                 />
               </div>
@@ -176,7 +177,7 @@ export default function Form({ event }: { event: Event }) {
                   name="race-director"
                   id="event-race-director"
                   className="input input-bordered w-full"
-                  value={rd}
+                  value={race_director}
                   onChange={(e) => setRD(e.target.value)}
                 />
               </div>
@@ -187,14 +188,13 @@ export default function Form({ event }: { event: Event }) {
               </label>
               <div className="mt-2">
                 <input
+                  required={true}
                   type="datetime-local"
                   name="start"
                   id="event-start-date"
                   className="input input-bordered w-full"
-                  value={unixToInput(start)}
-                  onChange={(e) => {
-                    setStart(dateTimeToUnix(e.target.value));
-                  }}
+                  value={start}
+                  onChange={(e) => setStart(e.target.value)}
                 />
               </div>
             </div>
@@ -208,8 +208,8 @@ export default function Form({ event }: { event: Event }) {
                   name="end"
                   id="event-end-date"
                   className="input input-bordered w-full"
-                  value={unixToInput(end)}
-                  onChange={(e) => setEnd(dateTimeToUnix(e.target.value))}
+                  value={end}
+                  onChange={(e) => setEnd(e.target.value)}
                 />
               </div>
             </div>
@@ -227,7 +227,7 @@ export default function Form({ event }: { event: Event }) {
                     autoComplete="given-distance"
                     className="input input-bordered w-full"
                     value={distance}
-                    onChange={(e) => setDistance(parseInt(e.target.value))}
+                    onChange={(e) => setDistance(Number(e.target.value))}
                   />
                   <span>KM</span>
                 </div>
@@ -259,14 +259,14 @@ export default function Form({ event }: { event: Event }) {
                 <div className="input-group">
                   <span>Rp</span>
                   <input
-                    type="text"
+                    type="number"
                     name="regis-fee"
                     id="event-registration-fee"
                     className="input input-bordered w-full"
                     min={1}
                     max={10000}
-                    value={regisFee}
-                    onChange={(e) => setRegisFee(parseInt(e.target.value))}
+                    value={registration_fee}
+                    onChange={(e) => setRegisFee(Number(e.target.value))}
                   />
                   <span>K</span>
                 </div>
