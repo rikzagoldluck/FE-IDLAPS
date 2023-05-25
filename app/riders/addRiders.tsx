@@ -2,20 +2,43 @@
 
 import { SyntheticEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { dateTimeToUnix } from "@/services/converter";
+import { EventResponse } from "@/services/events/data-type";
+import { CategoryResponse } from "@/services/categories/data-type";
+import { TeamResponse } from "@/services/teams/data-type";
 
-export default function AddEvent() {
+const dateTimeToUnix = (datetime: string) => {
+  const date = new Date(datetime);
+
+  return Math.floor(date.getTime() / 1000);
+};
+export default function AddRider() {
   const [name, setName] = useState("");
-  const [location, setLocation] = useState("");
-  const [desc_1, setDesc1] = useState("");
-  const [desc_2, setDesc2] = useState("");
-  const [start, setStart] = useState("");
-  const [end, setEnd] = useState("");
-  const [distance, setDistance] = useState("");
-  const [type, setType] = useState("");
-  const [registration_fee, setRegisFee] = useState("");
-  const [commisioner, setComm] = useState("");
-  const [race_director, setRD] = useState("");
+  const [age, setAge] = useState(0);
+  const [nationality, setNationality] = useState("");
+  const [team_id, setTeamId] = useState(0);
+  const [bib, setBIB] = useState("");
+  const [vci_num, setVciNum] = useState("");
+  const [id_b, setidBeacon] = useState(0);
+  const [mac_no, setMacNo] = useState("");
+  const [note, setNote] = useState("");
+  const [note_1, setNote1] = useState("");
+  const [run_lap, setRunLap] = useState(0);
+  const [lap_no, setLapNo] = useState(0);
+  const [event_id, setEventId] = useState(0);
+  const [category_id, setCategoryId] = useState(0);
+  const [events, setEvents] = useState<EventResponse>({
+    message: "",
+    data: [],
+  });
+  const [categories, setCategories] = useState<CategoryResponse>({
+    message: "",
+    data: [],
+  });
+  const [teams, setTeams] = useState<TeamResponse>({
+    message: "",
+    data: [],
+  });
+
   const [modal, setModal] = useState(false);
   const [isMutating, setIsMutating] = useState(false);
 
@@ -26,7 +49,7 @@ export default function AddEvent() {
 
     setIsMutating(true);
 
-    const res = await fetch("http://localhost:3001/events", {
+    const res = await fetch("http://localhost:3001/riders", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -34,16 +57,19 @@ export default function AddEvent() {
 
       body: JSON.stringify({
         name,
-        location,
-        desc_1,
-        desc_2,
-        start_datetime: dateTimeToUnix(start),
-        end_datetime: dateTimeToUnix(end),
-        commisioner,
-        race_director,
-        distance,
-        type,
-        registration_fee,
+        age,
+        nationality,
+        team_id,
+        bib,
+        vci_num,
+        id_b,
+        mac_no,
+        note,
+        note_1,
+        run_lap,
+        lap_no,
+        event_id,
+        category_id,
       }),
     });
 
@@ -57,16 +83,19 @@ export default function AddEvent() {
     setIsMutating(false);
 
     setName("");
-    setLocation("");
-    setDesc1("");
-    setDesc2("");
-    setStart("");
-    setEnd("");
-    setDistance("");
-    setType("");
-    setRegisFee("");
-    setComm("");
-    setRD("");
+    setAge(0);
+    setNationality("");
+    setTeamId(0);
+    setBIB("");
+    setVciNum("");
+    setidBeacon(0);
+    setMacNo("");
+    setNote("");
+    setNote1("");
+    setRunLap(0);
+    setLapNo(0);
+    setEventId(0);
+    setCategoryId(0);
 
     router.refresh();
     setModal(false);
@@ -79,7 +108,7 @@ export default function AddEvent() {
   return (
     <div>
       <button className="btn btn-primary" onClick={handleChange}>
-        Add Event
+        Add Rider
       </button>
 
       <input
@@ -87,31 +116,31 @@ export default function AddEvent() {
         checked={modal}
         onChange={handleChange}
         className="modal-toggle"
-        id="add-event-modal"
+        id="add-rider-modal"
       />
 
       <div className="modal">
         <div className="modal-box w-11/12 max-w-5xl">
           <label
-            htmlFor="add-event-modal"
+            htmlFor="add-rider-modal"
             className="btn btn-sm btn-circle absolute right-2 top-2"
           >
             ✕
           </label>
           <form onSubmit={handleSubmit}>
-            <h3 className="font-bold text-lg">Add New Event</h3>
+            <h3 className="font-bold text-lg">Add New Rider</h3>
             <div className="border-b border-gray-900/10 pb-12">
               <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                 <div className="sm:col-span-3">
-                  <label htmlFor="event-name" className="label-text">
-                    Event Name
+                  <label htmlFor="rider-name" className="label-text">
+                    Rider Name
                   </label>
                   <div className="mt-2">
                     <input
                       required={true}
                       type="text"
                       name="name"
-                      id="event-name"
+                      id="rider-name"
                       className="input input-bordered w-full"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
@@ -119,118 +148,143 @@ export default function AddEvent() {
                   </div>
                 </div>
                 <div className="sm:col-span-3">
-                  <label htmlFor="event-location" className="label-text">
-                    Event Location
+                  <label htmlFor="rider-age" className="label-text">
+                    Age
                   </label>
                   <div className="mt-2">
                     <input
                       required={true}
-                      type="text"
-                      name="location"
-                      id="event-location"
+                      type="number"
+                      name="age"
+                      id="rider-age"
+                      min={0}
+                      max={200}
                       className="input input-bordered w-full"
-                      value={location}
-                      onChange={(e) => setLocation(e.target.value)}
+                      value={age}
+                      onChange={(e) => setAge(Number(e.target.value))}
                     />
                   </div>
                 </div>
 
                 <div className="sm:col-span-3">
-                  <label htmlFor="event-description1" className="label-text">
-                    Description 1
+                  <label htmlFor="rider-nationality" className="label-text">
+                    Nationality
                   </label>
                   <div className="mt-2">
-                    <textarea
-                      name="desc_1"
-                      id="event-description1"
+                    <input
+                      type="text"
+                      required={true}
+                      name="nationality"
+                      id="rider-nationality"
                       className="w-full textarea textarea-bordered h-24"
-                      placeholder="Description 1"
-                      value={desc_1}
-                      onChange={(e) => setDesc1(e.target.value)}
-                    ></textarea>
+                      placeholder="INA"
+                      value={nationality}
+                      onChange={(e) => setNationality(e.target.value)}
+                    ></input>
                   </div>
                 </div>
                 <div className="sm:col-span-3">
-                  <label htmlFor="event-description2" className="label-text">
-                    Description 2
+                  <label htmlFor="rider-bib" className="label-text">
+                    BIB
                   </label>
                   <div className="mt-2">
-                    <textarea
-                      name="desc_2"
-                      id="event-description2"
+                    <input
+                      type="text"
+                      required={true}
+                      name="bib"
+                      id="rider-bib"
                       className="w-full textarea textarea-bordered h-24"
-                      placeholder="Description 2"
-                      value={desc_2}
-                      onChange={(e) => setDesc2(e.target.value)}
-                    ></textarea>
+                      placeholder="001"
+                      value={bib}
+                      minLength={3}
+                      onChange={(e) => setBIB(e.target.value)}
+                    ></input>
                   </div>
                 </div>
 
                 <div className="sm:col-span-3">
-                  <label htmlFor="event-commisioner" className="label-text">
+                  <label htmlFor="rider-vcinum" className="label-text">
                     Commisioner
                   </label>
                   <div className="mt-2">
                     <input
                       type="text"
-                      name="commisioner"
-                      id="event-commisioner"
+                      required={true}
+                      name="vcinum"
+                      id="rider-vcinum"
                       className="input input-bordered w-full"
-                      value={commisioner}
-                      onChange={(e) => setComm(e.target.value)}
+                      value={vci_num}
+                      onChange={(e) => setVciNum(e.target.value)}
                     />
                   </div>
                 </div>
                 <div className="sm:col-span-3">
-                  <label htmlFor="event-race-director" className="label-text">
-                    Race Director
+                  <label htmlFor="rider-beacon" className="label-text">
+                    ID Beacon
                   </label>
                   <div className="mt-2">
                     <input
+                      type="number"
+                      name="beacon"
+                      id="rider-beacon"
+                      className="input input-bordered w-full"
+                      value={id_b}
+                      min={0}
+                      minLength={5}
+                      onChange={(e) => setidBeacon(Number(e.target.value))}
+                    />
+                  </div>
+                </div>
+                <div className="sm:col-span-3">
+                  <label htmlFor="rider-mac-no" className="label-text">
+                    No Mac
+                  </label>
+                  <div className="mt-2">
+                    <input
+                      required={true}
                       type="text"
-                      name="race-director"
-                      id="event-race-director"
+                      name="mac_no"
+                      id="rider-mac-no"
                       className="input input-bordered w-full"
-                      value={race_director}
-                      onChange={(e) => setRD(e.target.value)}
+                      value={mac_no}
+                      onChange={(e) => setMacNo(e.target.value)}
                     />
                   </div>
                 </div>
                 <div className="sm:col-span-3">
-                  <label htmlFor="event-start-date" className="label-text">
-                    Start Race
+                  <label htmlFor="rider-note-1" className="label-text">
+                    Note 1
                   </label>
                   <div className="mt-2">
                     <input
                       required={true}
-                      type="datetime-local"
-                      name="start"
-                      id="event-start-date"
+                      type="text"
+                      name="note_1"
+                      id="rider-note-1"
                       className="input input-bordered w-full"
-                      value={start}
-                      onChange={(e) => setStart(e.target.value)}
+                      value={note}
+                      onChange={(e) => setNote(e.target.value)}
                     />
                   </div>
                 </div>
+
                 <div className="sm:col-span-3">
-                  <label htmlFor="event-end-date" className="label-text">
-                    End Race
+                  <label htmlFor="rider-note-2" className="label-text">
+                    Note 2
                   </label>
                   <div className="mt-2">
-                    <input
-                      required={true}
-                      type="datetime-local"
-                      name="end"
-                      id="event-end-date"
+                    <textarea
+                      name="note_2"
+                      id="rider-note-2"
                       className="input input-bordered w-full"
-                      value={end}
-                      onChange={(e) => setEnd(e.target.value)}
+                      value={note_1}
+                      onChange={(e) => setNote1(e.target.value)}
                     />
                   </div>
                 </div>
 
                 <div className="sm:col-span-2 sm:col-start-1">
-                  <label htmlFor="event-distance" className="label-text">
+                  <label htmlFor="rider-distance" className="label-text">
                     Distance
                   </label>
                   <div className="mt-2">
@@ -238,7 +292,7 @@ export default function AddEvent() {
                       <input
                         type="number"
                         name="distance"
-                        id="event-distance"
+                        id="rider-distance"
                         autoComplete="given-distance"
                         className="input input-bordered w-full"
                         value={distance}
@@ -250,14 +304,14 @@ export default function AddEvent() {
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label htmlFor="event-race-type" className="label-text">
+                  <label htmlFor="rider-race-type" className="label-text">
                     Race Type
                   </label>
                   <div className="mt-2">
                     <input
                       type="text"
                       name="type"
-                      id="event-race-type"
+                      id="rider-race-type"
                       placeholder="Road Bike, Mountain Bike, etc..."
                       className="input input-bordered w-full"
                       value={type}
@@ -268,7 +322,7 @@ export default function AddEvent() {
 
                 <div className="sm:col-span-2">
                   <label
-                    htmlFor="event-registration-fee"
+                    htmlFor="rider-registration-fee"
                     className="label-text"
                   >
                     Registration Fee
@@ -279,7 +333,7 @@ export default function AddEvent() {
                       <input
                         type="number"
                         name="regis-fee"
-                        id="event-registration-fee"
+                        id="rider-registration-fee"
                         className="input input-bordered w-full"
                         min={1}
                         max={10000}

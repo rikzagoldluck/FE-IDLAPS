@@ -47,6 +47,12 @@ export default function Navbar(navbarProps: NavbarProps) {
               >
                 Rider
               </Link>
+              <Link
+                className={title === "team" ? "active" : ""}
+                href={"/teams"}
+              >
+                Team
+              </Link>
             </li>
           </ul>
         </div>

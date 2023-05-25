@@ -16,3 +16,18 @@ export function convertDateTime(dateTime: number) {
 
   return formattedDate;
 }
+
+export const unixToInput = (unix: number) => {
+  // Membuat objek Date dari UNIX timestamp (dalam milidetik)
+  const date = new Date(unix * 1000);
+  // Ubah ke timezone Jakarta
+  date.setHours(date.getHours() + 7);
+  // Mendapatkan tanggal dan waktu dalam format "YYYY-MM-DDTHH:mm"
+  return date.toISOString().slice(0, 16);
+};
+
+export const dateTimeToUnix = (datetime: string) => {
+  const date = new Date(datetime);
+
+  return Math.floor(date.getTime() / 1000);
+};

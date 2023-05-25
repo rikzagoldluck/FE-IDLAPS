@@ -5,20 +5,7 @@ import { SyntheticEvent, useCallback, useEffect, useState } from "react";
 import type { EventResponse } from "@/services/events/data-type";
 import { Category } from "@/services/categories/data-type";
 import { getEvents, getEventsWithCaching } from "@/services/events";
-
-const dateTimeToUnix = (datetime: string) => {
-  const date = new Date(datetime);
-
-  return Math.floor(date.getTime() / 1000);
-};
-
-const unixToInput = (unix: number) => {
-  // Membuat objek Date dari UNIX timestamp (dalam milidetik)
-  const date = new Date(unix * 1000);
-
-  // Mendapatkan tanggal dan waktu dalam format "YYYY-MM-DDTHH:mm"
-  return date.toISOString().slice(0, 16);
-};
+import { dateTimeToUnix, unixToInput } from "@/services/converter";
 
 export default function Form({ category }: { category: Category }) {
   const [name, setName] = useState(category.name);
