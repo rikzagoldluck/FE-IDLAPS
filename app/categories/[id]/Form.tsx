@@ -6,6 +6,7 @@ import type { EventResponse } from "@/services/events/data-type";
 import { Category } from "@/services/categories/data-type";
 import { getEvents, getEventsWithCaching } from "@/services/events";
 import { dateTimeToUnix, unixToInput } from "@/services/converter";
+import toast from "react-hot-toast";
 
 export default function Form({ category }: { category: Category }) {
   const [name, setName] = useState(category.name);
@@ -65,10 +66,11 @@ export default function Form({ category }: { category: Category }) {
     if (!res.ok) {
       setIsMutating(false);
       const resBody = await res.json();
-      alert(`Something went wrong : ${resBody.message}`);
+      toast.error("Something went wrong" + resBody.message, { duration: 1000 });
       return;
     }
 
+    toast.success("Category updated", { duration: 1000 });
     setIsMutating(false);
     router.push("/categories");
     router.refresh();
@@ -86,7 +88,7 @@ export default function Form({ category }: { category: Category }) {
     <div className="container mx-auto py-4 px-4">
       <form onSubmit={handleUpdate}>
         <div className="flex justify-between items-center">
-          <h3 className="font-bold text-lg">Edit {category.name}</h3>
+          <h3 className="font-bold text-lg">Edit Category : {category.name}</h3>
           {!isMutating ? (
             <button type="submit" className="btn btn-primary">
               Save
@@ -178,7 +180,7 @@ export default function Form({ category }: { category: Category }) {
                   <select
                     required={true}
                     id="events"
-                    className={"select select-bordered w-full " + event_id}
+                    className="select select-bordered w-full"
                     onChange={handleSelect}
                     value={event_id}
                   >

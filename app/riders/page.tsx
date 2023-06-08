@@ -4,7 +4,7 @@ import AddRider from "./addRiders";
 import DeleteRider from "./deleteRiders";
 import { getRiders } from "@/services/riders";
 import { Rider, RiderResponse } from "@/services/riders/data-type";
-
+import { Toaster } from "react-hot-toast";
 export const metadata = {
   title: "Rider List",
 };
@@ -12,13 +12,18 @@ export const metadata = {
 export default async function RiderList() {
   const RiderResponse: RiderResponse = await getRiders();
   const riders: Rider[] = RiderResponse.data ? RiderResponse.data : [];
-
   return (
     <>
+      <div>
+        <Toaster />
+      </div>
+
       <Navbar title={"rider"} />
 
       <div className="py-10 px-10">
-        <div className="py-2">{/* <AddRider /> */}</div>
+        <div className="py-2">
+          <AddRider />
+        </div>
 
         <div className="overflow-x-auto">
           <table className="table table-zebra w-full font-bold">
@@ -30,8 +35,6 @@ export default async function RiderList() {
                 <th>Nation</th>
                 <th>Team</th>
                 <th>BIB</th>
-                <th>Lap Running</th>
-                <th>Lap No</th>
                 <th>Running</th>
                 <th>Category - Event</th>
                 <th>Notes</th>
@@ -48,10 +51,8 @@ export default async function RiderList() {
                     <td>{rider.nationality}</td>
                     <td>{rider.teams.name}</td>
                     <td>{rider.bib}</td>
-                    <td>{rider.run_lap}</td>
-                    <td>{rider.lap_no}</td>
                     <td>{rider.run ? "RUN" : "STOP"}</td>
-                    <td>{rider.categories.name + "-" + rider.events.name}</td>
+                    <td>{rider.categories.name + " -" + rider.events.name}</td>
                     <td>{rider.note}</td>
                     <td className="flex gap-3">
                       {/* <UpdateRider {...rider} /> */}
@@ -67,7 +68,7 @@ export default async function RiderList() {
               ) : (
                 <tr>
                   <td className="text-center" colSpan={5}>
-                    Loading ...{" "}
+                    No any rider found, please add rider instead
                   </td>
                 </tr>
               )}

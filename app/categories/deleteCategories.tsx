@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-
+import toast from "react-hot-toast";
 type Category = {
   id: number;
   name: string;
@@ -24,9 +24,10 @@ export default function DeleteCategory(category: Category) {
     if (!res.ok) {
       setIsMutating(false);
       const resBody = await res.json();
-      alert(`Something went wrong : ${resBody.message}`);
+      toast.error("Something went wrong" + resBody.message, { duration: 1000 });
       return;
     }
+    toast.success("Category deleted", { duration: 1000 });
 
     setIsMutating(false);
 

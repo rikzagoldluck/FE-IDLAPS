@@ -1,31 +1,25 @@
 "use client";
 
-import { SyntheticEvent, useEffect, useState } from "react";
+import { SyntheticEvent, useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { EventResponse } from "@/services/events/data-type";
-import { CategoryResponse } from "@/services/categories/data-type";
+import { Category, CategoryResponse } from "@/services/categories/data-type";
 import { TeamResponse } from "@/services/teams/data-type";
+import { getEventsWithCaching } from "@/services/events";
+import { getCategoriesByEvent, getCategory } from "@/services/categories";
+import { getTeam, getTeamsWithCaching } from "@/services/teams";
 
-const dateTimeToUnix = (datetime: string) => {
-  const date = new Date(datetime);
+import toast from "react-hot-toast";
 
-  return Math.floor(date.getTime() / 1000);
-};
 export default function AddRider() {
   const [name, setName] = useState("");
   const [age, setAge] = useState(0);
   const [nationality, setNationality] = useState("");
-  const [team_id, setTeamId] = useState(0);
   const [bib, setBIB] = useState("");
   const [vci_num, setVciNum] = useState("");
-  const [id_b, setidBeacon] = useState(0);
+  const [id_beacon, setidBeacon] = useState(0);
   const [mac_no, setMacNo] = useState("");
-  const [note, setNote] = useState("");
   const [note_1, setNote1] = useState("");
-  const [run_lap, setRunLap] = useState(0);
-  const [lap_no, setLapNo] = useState(0);
-  const [event_id, setEventId] = useState(0);
-  const [category_id, setCategoryId] = useState(0);
   const [events, setEvents] = useState<EventResponse>({
     message: "",
     data: [],
@@ -41,8 +35,31 @@ export default function AddRider() {
 
   const [modal, setModal] = useState(false);
   const [isMutating, setIsMutating] = useState(false);
+  const [eventSelected, setEventSeleceted] = useState("");
+  const [teamSelected, setTeamSeleceted] = useState("");
+  const [categorySelected, setCategorySeleceted] = useState("");
 
   const router = useRouter();
+
+  const getEventAndTeamList = useCallback(async () => {
+    const eventsData = await getEventsWithCaching();
+    const teamsData = await getTeamsWithCaching();
+    setEvents(eventsData);
+    setTeams(teamsData);
+  }, [getEventsWithCaching, getTeamsWithCaching]);
+
+  useEffect(() => {
+    getEventAndTeamList();
+  }, []);
+
+  useEffect(() => {
+    if (eventSelected == "") return;
+    getCategoriesByEvent(eventSelected)
+      .then((res) => {
+        setCategories(res);
+      })
+      .catch((err) => alert("Failed to fetch categories by event :   " + err));
+  }, [eventSelected]);
 
   async function handleSubmit(e: SyntheticEvent) {
     e.preventDefault();
@@ -59,43 +76,38 @@ export default function AddRider() {
         name,
         age,
         nationality,
-        team_id,
+        team_id: teamSelected,
         bib,
         vci_num,
-        id_b,
+        id_beacon,
         mac_no,
-        note,
         note_1,
-        run_lap,
-        lap_no,
-        event_id,
-        category_id,
+        event_id: eventSelected,
+        category_id: categorySelected,
       }),
     });
 
     if (!res.ok) {
       setIsMutating(false);
       const resBody = await res.json();
+      toast.error("Something went wrong" + resBody.message, { duration: 1000 });
       alert(`Something went wrong : ${resBody.message}`);
       return;
     }
-
+    toast.success("Rider added", { duration: 1000 });
     setIsMutating(false);
 
     setName("");
     setAge(0);
     setNationality("");
-    setTeamId(0);
+    setTeamSeleceted("");
     setBIB("");
     setVciNum("");
     setidBeacon(0);
     setMacNo("");
-    setNote("");
     setNote1("");
-    setRunLap(0);
-    setLapNo(0);
-    setEventId(0);
-    setCategoryId(0);
+    setEventSeleceted("");
+    setCategorySeleceted("");
 
     router.refresh();
     setModal(false);
@@ -147,7 +159,23 @@ export default function AddRider() {
                     />
                   </div>
                 </div>
+
                 <div className="sm:col-span-3">
+                  <label htmlFor="rider-note-2" className="label-text">
+                    Note 2
+                  </label>
+                  <div className="mt-2">
+                    <textarea
+                      name="note_2"
+                      id="rider-note-2"
+                      className="input input-bordered w-full"
+                      value={note_1}
+                      onChange={(e) => setNote1(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="sm:col-span-2 sm:col-start-1">
                   <label htmlFor="rider-age" className="label-text">
                     Age
                   </label>
@@ -166,7 +194,7 @@ export default function AddRider() {
                   </div>
                 </div>
 
-                <div className="sm:col-span-3">
+                <div className="sm:col-span-2">
                   <label htmlFor="rider-nationality" className="label-text">
                     Nationality
                   </label>
@@ -176,14 +204,14 @@ export default function AddRider() {
                       required={true}
                       name="nationality"
                       id="rider-nationality"
-                      className="w-full textarea textarea-bordered h-24"
+                      className="w-full input input-bordered"
                       placeholder="INA"
                       value={nationality}
                       onChange={(e) => setNationality(e.target.value)}
                     ></input>
                   </div>
                 </div>
-                <div className="sm:col-span-3">
+                <div className="sm:col-span-2">
                   <label htmlFor="rider-bib" className="label-text">
                     BIB
                   </label>
@@ -193,7 +221,7 @@ export default function AddRider() {
                       required={true}
                       name="bib"
                       id="rider-bib"
-                      className="w-full textarea textarea-bordered h-24"
+                      className="w-full input input-bordered"
                       placeholder="001"
                       value={bib}
                       minLength={3}
@@ -204,7 +232,7 @@ export default function AddRider() {
 
                 <div className="sm:col-span-3">
                   <label htmlFor="rider-vcinum" className="label-text">
-                    Commisioner
+                    VCI Num
                   </label>
                   <div className="mt-2">
                     <input
@@ -228,7 +256,7 @@ export default function AddRider() {
                       name="beacon"
                       id="rider-beacon"
                       className="input input-bordered w-full"
-                      value={id_b}
+                      value={id_beacon}
                       min={0}
                       minLength={5}
                       onChange={(e) => setidBeacon(Number(e.target.value))}
@@ -251,96 +279,75 @@ export default function AddRider() {
                     />
                   </div>
                 </div>
-                <div className="sm:col-span-3">
-                  <label htmlFor="rider-note-1" className="label-text">
-                    Note 1
-                  </label>
-                  <div className="mt-2">
-                    <input
-                      required={true}
-                      type="text"
-                      name="note_1"
-                      id="rider-note-1"
-                      className="input input-bordered w-full"
-                      value={note}
-                      onChange={(e) => setNote(e.target.value)}
-                    />
-                  </div>
-                </div>
 
                 <div className="sm:col-span-3">
-                  <label htmlFor="rider-note-2" className="label-text">
-                    Note 2
-                  </label>
-                  <div className="mt-2">
-                    <textarea
-                      name="note_2"
-                      id="rider-note-2"
-                      className="input input-bordered w-full"
-                      value={note_1}
-                      onChange={(e) => setNote1(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div className="sm:col-span-2 sm:col-start-1">
-                  <label htmlFor="rider-distance" className="label-text">
-                    Distance
+                  <label htmlFor="event-team" className="label-text">
+                    Team
                   </label>
                   <div className="mt-2">
                     <div className="input-group">
-                      <input
-                        type="number"
-                        name="distance"
-                        id="rider-distance"
-                        autoComplete="given-distance"
-                        className="input input-bordered w-full"
-                        value={distance}
-                        onChange={(e) => setDistance(e.target.value)}
-                      />
-                      <span>KM</span>
+                      <select
+                        required={true}
+                        className="select select-bordered w-full"
+                        onChange={(e) => setTeamSeleceted(e.target.value)}
+                        defaultValue={"pickone"}
+                      >
+                        <option value={"pickone"}>Pick one</option>
+                        {teams.data.length > 0 &&
+                          teams.data.map((team) => (
+                            <option key={team.id} value={team.id}>
+                              {`${team.name} - ${team.nationality}`}
+                            </option>
+                          ))}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div className="sm:col-span-3">
+                  <label htmlFor="event-select" className="label-text">
+                    Event
+                  </label>
+                  <div className="mt-2">
+                    <div className="input-group">
+                      <select
+                        required={true}
+                        className="select select-bordered w-full"
+                        onChange={(e) => setEventSeleceted(e.target.value)}
+                        defaultValue={"pickone"}
+                      >
+                        <option value={"pickone"}>Pick one</option>
+                        {events.data.length > 0 &&
+                          events.data.map((event) => (
+                            <option key={event.id} value={event.id}>
+                              {`${event.name} - ${event.location}`}
+                            </option>
+                          ))}
+                      </select>
                     </div>
                   </div>
                 </div>
 
-                <div className="sm:col-span-2">
-                  <label htmlFor="rider-race-type" className="label-text">
-                    Race Type
-                  </label>
-                  <div className="mt-2">
-                    <input
-                      type="text"
-                      name="type"
-                      id="rider-race-type"
-                      placeholder="Road Bike, Mountain Bike, etc..."
-                      className="input input-bordered w-full"
-                      value={type}
-                      onChange={(e) => setType(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div className="sm:col-span-2">
-                  <label
-                    htmlFor="rider-registration-fee"
-                    className="label-text"
-                  >
-                    Registration Fee
+                <div className="sm:col-span-3">
+                  <label htmlFor="categories-select" className="label-text">
+                    Category
                   </label>
                   <div className="mt-2">
                     <div className="input-group">
-                      <span>Rp</span>
-                      <input
-                        type="number"
-                        name="regis-fee"
-                        id="rider-registration-fee"
-                        className="input input-bordered w-full"
-                        min={1}
-                        max={10000}
-                        value={registration_fee}
-                        onChange={(e) => setRegisFee(e.target.value)}
-                      />
-                      <span>K</span>
+                      <select
+                        required={true}
+                        className="select select-bordered w-full"
+                        onChange={(e) => setCategorySeleceted(e.target.value)}
+                        defaultValue={"pickone"}
+                        disabled={categories.data.length === 0}
+                      >
+                        <option value={"pickone"}>Pick one</option>
+                        {categories.data.length > 0 &&
+                          categories.data.map((category: Category) => (
+                            <option key={category.id} value={category.id}>
+                              {`${category.name}`}
+                            </option>
+                          ))}
+                      </select>
                     </div>
                   </div>
                 </div>

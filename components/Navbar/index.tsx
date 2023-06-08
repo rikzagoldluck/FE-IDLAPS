@@ -8,8 +8,8 @@ export default function Navbar(navbarProps: NavbarProps) {
   return (
     <div className="navbar bg-base-300">
       <div className="container mx-auto">
-        <div className="flex-1">
-          <a className="btn btn-ghost normal-case text-xl">
+        <div className="flex-1 px-2 lg:flex-none">
+          <a className="text-xl font-bold">
             IDLaps
             <svg
               className="h-5 w-5 fill-current rotate-45 inline-block"
@@ -22,40 +22,82 @@ export default function Navbar(navbarProps: NavbarProps) {
             </svg>
           </a>
         </div>
+        <div className="flex justify-end flex-1 px-2">
+          <div className="flex items-stretch">
+            <Link
+              className={
+                title === "race"
+                  ? "btn btn-primary rounded-btn"
+                  : "btn btn-ghost rounded-btn"
+              }
+              href={"/race"}
+            >
+              Race Now
+            </Link>
+            <div className="dropdown dropdown-end">
+              <label tabIndex={0} className="btn btn-ghost rounded-btn">
+                Master{" "}
+                <svg
+                  className="fill-current"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z" />
+                </svg>
+              </label>
+              <ul
+                tabIndex={0}
+                className="menu dropdown-content p-2 shadow bg-base-100 rounded-box w-52 mt-4"
+              >
+                <li>
+                  <Link
+                    className={title === "event" ? "active" : ""}
+                    href={"/events"}
+                  >
+                    Event
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    className={title === "category" ? "active" : ""}
+                    href={"/categories"}
+                  >
+                    Category
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    className={title === "rider" ? "active" : ""}
+                    href={"/riders"}
+                  >
+                    Rider
+                  </Link>
+                  <Link
+                    className={title === "team" ? "active" : ""}
+                    href={"/teams"}
+                  >
+                    Team
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        {/* <div className="flex-1"></div>
         <div className="flex-none">
-          <ul className="menu menu-horizontal rounded-box p-2">
-            <li>
-              <Link
-                className={title === "event" ? "active" : ""}
-                href={"/events"}
-              >
-                Event
-              </Link>
-            </li>
-            <li>
-              <Link
-                className={title === "category" ? "active" : ""}
-                href={"/categories"}
-              >
-                Category
-              </Link>
-            </li>
-            <li>
-              <Link
-                className={title === "rider" ? "active" : ""}
-                href={"/riders"}
-              >
-                Rider
-              </Link>
-              <Link
-                className={title === "team" ? "active" : ""}
-                href={"/teams"}
-              >
-                Team
-              </Link>
+          <ul className="menu menu-horizontal rounded-box p-2 ">
+            <li tabIndex={0}>
+              <a>
+                Master
+                
+              </a>
+              <ul className="p-2 bg-base-100"></ul>
             </li>
           </ul>
-        </div>
+        </div> */}
       </div>
     </div>
   );

@@ -45,7 +45,7 @@ export default function Form({ team }: { team: Team }) {
     <div className="container mx-auto py-4 px-4">
       <form onSubmit={handleUpdate}>
         <div className="flex justify-between items-center">
-          <h3 className="font-bold text-lg">Edit {team.name}</h3>
+          <h3 className="font-bold text-lg">Edit team : {team.name}</h3>
           {!isMutating ? (
             <button type="submit" className="btn btn-primary">
               Save

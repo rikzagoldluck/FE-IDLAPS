@@ -5,8 +5,8 @@ import AddEvent from "./addEvents";
 import DeleteEvent from "./deleteEvents";
 import { getEvents } from "@/services/events";
 import { Event, EventResponse } from "@/services/events/data-type";
-import { convertDateTime } from "@/services/converter";
-
+import { convertDateTimeMillis } from "@/services/converter";
+import { Toaster } from "react-hot-toast";
 export const metadata = {
   title: "Event List",
 };
@@ -17,6 +17,9 @@ export default async function EventList() {
 
   return (
     <>
+      <div>
+        <Toaster />
+      </div>
       <Navbar title={"event"} />
 
       <div className="py-10 px-10">
@@ -52,8 +55,8 @@ export default async function EventList() {
                     <td>{event.location}</td>
                     <td>{event.desc_1}</td>
                     <td>{event.desc_2}</td>
-                    <td>{convertDateTime(event.start_datetime)}</td>
-                    <td>{convertDateTime(event.end_datetime)}</td>
+                    <td>{convertDateTimeMillis(event.start_datetime)}</td>
+                    <td>{convertDateTimeMillis(event.end_datetime)}</td>
                     <td>{event.distance}</td>
                     <td>{event.type}</td>
                     <td>{event.registration_fee}</td>
@@ -73,7 +76,7 @@ export default async function EventList() {
               ) : (
                 <tr>
                   <td className="text-center" colSpan={5}>
-                    Loading ...{" "}
+                    No any event found, please add event instead
                   </td>
                 </tr>
               )}

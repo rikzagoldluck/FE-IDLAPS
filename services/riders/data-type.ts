@@ -10,19 +10,28 @@ export type Rider = {
   team_id: number;
   teams: Team;
   bib: string;
+  total_waktu: number;
   vci_num: string;
-  id_b: number;
+  id_beacon: number;
   mac_no: string;
   note: string;
   note_1: string;
-  run_lap: number;
-  lap_no: number;
   run: boolean;
   event_id: number;
   events: Event;
   category_id: number;
-  categories: Category;
+  categories: Category[];
+  race_results: RaceResult[];
 };
+
+type RaceResult = {
+  id: number;
+  rider_id: number;
+  category_id: number;
+  lap_number: number;
+  finish_time: number;
+};
+
 export type RiderResponse = {
   message: string;
   data: Rider[];

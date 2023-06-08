@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { SyntheticEvent, useState } from "react";
 import type { Event } from "@/services/events/data-type";
 import { dateTimeToUnix, unixToInput } from "@/services/converter";
-
+import toast from "react-hot-toast";
 export default function Form({ event }: { event: Event }) {
   const [name, setName] = useState(event.name);
   const [location, setLocation] = useState(event.location);
@@ -50,10 +50,11 @@ export default function Form({ event }: { event: Event }) {
     if (!res.ok) {
       setIsMutating(false);
       const resBody = await res.json();
-      alert(`Something went wrong : ${resBody.message}`);
+      toast.error("Something went wrong" + resBody.message, { duration: 1000 });
       return;
     }
 
+    toast.success("Event updated", { duration: 1000 });
     setIsMutating(false);
     router.push("/events");
     router.refresh();
@@ -63,7 +64,7 @@ export default function Form({ event }: { event: Event }) {
     <div className="container mx-auto py-4 px-4">
       <form onSubmit={handleUpdate}>
         <div className="flex justify-between items-center">
-          <h3 className="font-bold text-lg">Edit {event.name}</h3>
+          <h3 className="font-bold text-lg">Edit event : {event.name}</h3>
           {!isMutating ? (
             <button type="submit" className="btn btn-primary">
               Save

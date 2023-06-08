@@ -1,9 +1,9 @@
 import Navbar from "@/components/Navbar";
-import { Event } from "@/services/events/data-type";
 import Form from "./Form";
-
+import { Rider } from "@/services/riders/data-type";
+import { Toaster } from "react-hot-toast";
 export const metadata = {
-  title: "Event Edit",
+  title: "Rider Edit",
 };
 
 // export async function generateStaticParams() {
@@ -16,13 +16,13 @@ export const metadata = {
 // }));
 // }
 
-export default async function EventEdit({
+export default async function RiderEdit({
   params,
 }: {
   params: { id: number };
 }) {
   const { id } = params;
-  const res = await fetch(`http://localhost:3001/events/${id}`, {
+  const res = await fetch(`http://localhost:3001/riders/${id}`, {
     cache: "no-store",
   });
   const resBody = await res.json();
@@ -30,13 +30,17 @@ export default async function EventEdit({
     alert(`Something went wrong : ${resBody.message}`);
     return;
   }
-  const event: Event = resBody.data;
+  const rider: Rider = resBody.data;
   // console.log(event);
 
   return (
     <>
-      <Navbar title={"event"} />
-      <Form event={event} />
+      <div>
+        <Toaster />
+      </div>
+
+      <Navbar title={"rider"} />
+      <Form rider={rider} />
     </>
   );
 }

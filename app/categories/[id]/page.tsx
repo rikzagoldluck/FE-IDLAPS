@@ -1,20 +1,10 @@
 import Navbar from "@/components/Navbar";
 import { Category } from "@/services/categories/data-type";
 import Form from "./Form";
-
+import { Toaster } from "react-hot-toast";
 export const metadata = {
   title: "Category Edit",
 };
-
-// export async function generateStaticParams() {
-//   const events = await fetch("http://localhost:3001/events").then((res) =>
-//     res.json()
-//   );
-
-// return events.data.map((event: Event) => ({
-//   id: event.id,
-// }));
-// }
 
 export default async function CategoryEdit({
   params,
@@ -35,6 +25,9 @@ export default async function CategoryEdit({
 
   return (
     <>
+      <div>
+        <Toaster />
+      </div>
       <Navbar title={"category"} />
       <Form category={category} />
     </>

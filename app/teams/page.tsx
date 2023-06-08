@@ -4,6 +4,7 @@ import AddTeam from "./addTeams";
 import DeleteTeam from "./deleteTeams";
 import { getTeams } from "@/services/teams";
 import { Team, TeamResponse } from "@/services/teams/data-type";
+import { Toaster } from "react-hot-toast";
 
 export const metadata = {
   title: "Team List",
@@ -15,6 +16,9 @@ export default async function TeamList() {
 
   return (
     <>
+      <div>
+        <Toaster />
+      </div>
       <Navbar title={"team"} />
 
       <div className="py-10 px-10">
@@ -56,7 +60,7 @@ export default async function TeamList() {
               ) : (
                 <tr>
                   <td className="text-center" colSpan={5}>
-                    Loading ...{" "}
+                    No any team found, please add team instead
                   </td>
                 </tr>
               )}

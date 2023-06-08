@@ -4,12 +4,15 @@ export type Category = {
   id: number;
   name: string;
   description: string;
-  start_time: number;
-  end_time: number;
+  start_time: string;
+  end_time: string;
+  start_sch: string;
+  end_sch: string;
   sex: string;
   distance: number;
   lap: number;
   run: boolean;
+  race_today: boolean;
   event_id: number;
   events: Event;
 };

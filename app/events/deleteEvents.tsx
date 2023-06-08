@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-
+import toast from "react-hot-toast";
 type Event = {
   id: number;
   name: string;
@@ -24,10 +24,10 @@ export default function DeleteEvent(event: Event) {
     if (!res.ok) {
       setIsMutating(false);
       const resBody = await res.json();
-      alert(`Something went wrong : ${resBody.message}`);
+      toast.error("Something went wrong" + resBody.message, { duration: 1000 });
       return;
     }
-
+    toast.success("Event deleted", { duration: 1000 });
     setIsMutating(false);
 
     router.refresh();
@@ -40,7 +40,7 @@ export default function DeleteEvent(event: Event) {
 
   return (
     <div>
-      <button className="btn btn-accent btn-sm" onClick={handleChange}>
+      <button className="btn btn-error btn-sm" onClick={handleChange}>
         Delete
       </button>
 

@@ -4,6 +4,8 @@ import { SyntheticEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { dateTimeToUnix } from "@/services/converter";
 
+import toast from "react-hot-toast";
+
 export default function AddEvent() {
   const [name, setName] = useState("");
   const [location, setLocation] = useState("");
@@ -50,18 +52,21 @@ export default function AddEvent() {
     if (!res.ok) {
       setIsMutating(false);
       const resBody = await res.json();
-      alert(`Something went wrong : ${resBody.message}`);
+      toast.error(`Something went wrong : ${resBody.message}`, {
+        duration: 1000,
+      });
       return;
     }
 
+    toast.success("Event added successfully", { duration: 1000 });
     setIsMutating(false);
 
     setName("");
     setLocation("");
     setDesc1("");
     setDesc2("");
-    setStart("");
-    setEnd("");
+    setStart("0");
+    setEnd("0");
     setDistance("");
     setType("");
     setRegisFee("");

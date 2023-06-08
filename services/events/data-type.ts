@@ -4,8 +4,8 @@ export type Event = {
   location: string;
   desc_1: string;
   desc_2: string;
-  start_datetime: number;
-  end_datetime: number;
+  start_datetime: string;
+  end_datetime: string;
   distance: number;
   type: string;
   registration_fee: number;

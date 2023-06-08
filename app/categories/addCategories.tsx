@@ -4,12 +4,8 @@ import { SyntheticEvent, useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { EventResponse } from "@/services/events/data-type";
 import { getEvents, getEventsWithCaching } from "@/services/events";
-
-const dateTimeToUnix = (datetime: string) => {
-  const date = new Date(datetime);
-
-  return Math.floor(date.getTime() / 1000);
-};
+import toast from "react-hot-toast";
+import { dateTimeToUnix } from "@/services/converter";
 export default function AddEvent() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -32,7 +28,7 @@ export default function AddEvent() {
   const getEventList = useCallback(async () => {
     const data = await getEventsWithCaching();
     setEvents(data);
-  }, [getEvents]);
+  }, [getEventsWithCaching]);
 
   useEffect(() => {
     getEventList();
@@ -53,7 +49,7 @@ export default function AddEvent() {
         name,
         description,
         start_time: dateTimeToUnix(start_time),
-        end_time: dateTimeToUnix(start_time),
+        end_time: dateTimeToUnix(end_time),
         sex,
         distance,
         lap,
@@ -65,16 +61,17 @@ export default function AddEvent() {
     if (!res.ok) {
       setIsMutating(false);
       const resBody = await res.json();
-      alert(`Something went wrong : ${resBody.message}`);
+      toast.error("Something went wrong" + resBody.message, { duration: 1000 });
       return;
     }
 
+    toast.success("Category added", { duration: 1000 });
     setIsMutating(false);
 
     setName("");
     setDescription("");
-    setStartTime("");
-    setEndTime("");
+    setStartTime("0");
+    setEndTime("0");
     setSex("");
     setDistance(0);
     setLap(0);
@@ -140,17 +137,26 @@ export default function AddEvent() {
                   </div>
                 </div>
                 <div className="sm:col-span-3">
-                  <label htmlFor="category-description" className="label-text">
-                    Description{" "}
+                  <label htmlFor="event-name" className="label-text">
+                    Event
                   </label>
                   <div className="mt-2">
-                    <textarea
-                      name="description"
-                      id="category-description"
-                      className="textarea textarea-bordered w-full"
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                    />
+                    <div className="input-group">
+                      <select
+                        required={true}
+                        className="select select-bordered w-full"
+                        onChange={handleSelect}
+                        defaultValue={"pickone"}
+                      >
+                        <option value={"pickone"}>Pick one</option>
+                        {events.data.length > 0 &&
+                          events.data.map((event) => (
+                            <option key={event.id} value={event.id}>
+                              {`${event.name} - ${event.location}`}
+                            </option>
+                          ))}
+                      </select>
+                    </div>
                   </div>
                 </div>
 
@@ -194,29 +200,17 @@ export default function AddEvent() {
                 </div>
 
                 <div className="sm:col-span-3">
-                  <label
-                    htmlFor="event-registration-fee"
-                    className="label-text"
-                  >
-                    Event
+                  <label htmlFor="category-description" className="label-text">
+                    Description{" "}
                   </label>
                   <div className="mt-2">
-                    <div className="input-group">
-                      <select
-                        required={true}
-                        className="select select-bordered w-full"
-                        onChange={handleSelect}
-                        defaultValue={"pickone"}
-                      >
-                        <option value={"pickone"}>Pick one</option>
-                        {events.data.length > 0 &&
-                          events.data.map((event) => (
-                            <option key={event.id} value={event.id}>
-                              {`${event.name} - ${event.location}`}
-                            </option>
-                          ))}
-                      </select>
-                    </div>
+                    <textarea
+                      name="description"
+                      id="category-description"
+                      className="textarea textarea-bordered w-full"
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                    />
                   </div>
                 </div>
 

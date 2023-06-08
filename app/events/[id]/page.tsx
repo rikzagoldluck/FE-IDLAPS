@@ -1,7 +1,7 @@
 import Navbar from "@/components/Navbar";
 import { Event } from "@/services/events/data-type";
 import Form from "./Form";
-
+import { Toaster } from "react-hot-toast";
 export const metadata = {
   title: "Event Edit",
 };
@@ -35,6 +35,9 @@ export default async function EventEdit({
 
   return (
     <>
+      <div>
+        <Toaster />
+      </div>
       <Navbar title={"event"} />
       <Form event={event} />
     </>

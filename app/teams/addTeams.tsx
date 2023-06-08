@@ -2,7 +2,7 @@
 
 import { SyntheticEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-
+import toast from "react-hot-toast";
 export default function AddTeam() {
   const [name, setName] = useState("");
   const [nationality, setNationality] = useState("");
@@ -33,10 +33,13 @@ export default function AddTeam() {
     if (!res.ok) {
       setIsMutating(false);
       const resBody = await res.json();
-      alert(`Something went wrong : ${resBody.message}`);
+      toast.error(`Something went wrong : ${resBody.message}`, {
+        duration: 1000,
+      });
       return;
     }
 
+    toast.success("Team added", { duration: 1000 });
     setIsMutating(false);
 
     setName("");
@@ -77,7 +80,7 @@ export default function AddTeam() {
             <h3 className="font-bold text-lg">Add New Team</h3>
             <div className="border-b border-gray-900/10 pb-12">
               <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                <div className="sm:col-span-3">
+                <div className="sm:col-span-6">
                   <label htmlFor="team-name" className="label-text">
                     Team Name
                   </label>
@@ -112,17 +115,17 @@ export default function AddTeam() {
 
                 <div className="sm:col-span-3">
                   <label htmlFor="team-province" className="label-text">
-                    Description 1
+                    Team Province
                   </label>
                   <div className="mt-2">
-                    <textarea
+                    <input
                       name="province"
                       id="team-province"
-                      className="w-full textarea textarea-bordered h-24"
+                      className="w-full input input-bordered"
                       placeholder="Province"
                       value={province}
                       onChange={(e) => setProvince(e.target.value)}
-                    ></textarea>
+                    />
                   </div>
                 </div>
               </div>
