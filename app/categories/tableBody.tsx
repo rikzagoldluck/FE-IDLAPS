@@ -11,7 +11,7 @@ import toast from "react-hot-toast";
 const tableBody = () => {
   // const { categories } = props;
 
-  const { data, error, isLoading, mutate } = useSWR("getCategroies", () =>
+  const { data, error, isLoading, mutate } = useSWR("getCategories", () =>
     getCategories()
   );
 
@@ -60,6 +60,8 @@ const tableBody = () => {
       return;
     }
   };
+
+  console.log(categories);
 
   return (
     <tbody>

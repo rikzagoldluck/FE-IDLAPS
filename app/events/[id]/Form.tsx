@@ -41,9 +41,8 @@ export default function Form({ event }: { event: Event }) {
         distance,
         type,
         registration_fee,
-        start_datetime:
-          typeof start === "number" ? start : dateTimeToUnix(start),
-        end_datetime: typeof end === "number" ? end : dateTimeToUnix(end),
+        start_datetime: dateTimeToUnix(start),
+        end_datetime: dateTimeToUnix(end),
       }),
     });
 

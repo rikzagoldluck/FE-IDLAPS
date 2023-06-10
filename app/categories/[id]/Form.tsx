@@ -11,8 +11,8 @@ import toast from "react-hot-toast";
 export default function Form({ category }: { category: Category }) {
   const [name, setName] = useState(category.name);
   const [description, setDescription] = useState(category.description);
-  const [start_time, setStartTime] = useState(unixToInput(category.start_time));
-  const [end_time, setEndTime] = useState(unixToInput(category.end_time));
+  const [start_time, setStartTime] = useState(unixToInput(category.start_sch));
+  const [end_time, setEndTime] = useState(unixToInput(category.end_sch));
   const [sex, setSex] = useState(category.sex);
   const [distance, setDistance] = useState(category.distance);
   const [lap, setLap] = useState(category.lap);
@@ -49,12 +49,8 @@ export default function Form({ category }: { category: Category }) {
       body: JSON.stringify({
         name,
         description,
-        start_time:
-          typeof start_time === "number"
-            ? start_time
-            : dateTimeToUnix(start_time),
-        end_time:
-          typeof end_time === "number" ? start_time : dateTimeToUnix(end_time),
+        start_sch: dateTimeToUnix(start_time),
+        end_sch: dateTimeToUnix(end_time),
         sex,
         distance,
         lap,

@@ -12,6 +12,7 @@ export const metadata = {
 export default async function RiderList() {
   const RiderResponse: RiderResponse = await getRiders();
   const riders: Rider[] = RiderResponse.data ? RiderResponse.data : [];
+  console.log(riders);
   return (
     <>
       <div>
@@ -52,7 +53,11 @@ export default async function RiderList() {
                     <td>{rider.teams.name}</td>
                     <td>{rider.bib}</td>
                     <td>{rider.run ? "RUN" : "STOP"}</td>
-                    <td>{rider.categories.name + " -" + rider.events.name}</td>
+                    <td>
+                      {rider.categories.name +
+                        " -" +
+                        rider.categories.events.name}
+                    </td>
                     <td>{rider.note}</td>
                     <td className="flex gap-3">
                       {/* <UpdateRider {...rider} /> */}

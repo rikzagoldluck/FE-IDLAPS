@@ -82,7 +82,6 @@ export default function AddRider() {
         id_beacon,
         mac_no,
         note_1,
-        event_id: eventSelected,
         category_id: categorySelected,
       }),
     });
@@ -338,10 +337,13 @@ export default function AddRider() {
                         className="select select-bordered w-full"
                         onChange={(e) => setCategorySeleceted(e.target.value)}
                         defaultValue={"pickone"}
-                        disabled={categories.data.length === 0}
+                        disabled={
+                          categories.data ? categories.data.length === 0 : true
+                        }
                       >
                         <option value={"pickone"}>Pick one</option>
-                        {categories.data.length > 0 &&
+                        {categories.data &&
+                          categories.data.length > 0 &&
                           categories.data.map((category: Category) => (
                             <option key={category.id} value={category.id}>
                               {`${category.name}`}

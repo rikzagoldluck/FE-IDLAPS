@@ -58,12 +58,22 @@ const tableBody = () => {
         }
       );
 
-      const resStartTime = await fetch(
-        `http://localhost:3001/categories/start_time/${id}`,
-        {
-          method: "PATCH",
-        }
-      );
+      if (!Boolean(e.target.checked)) {
+        const resStartTime = await fetch(
+          `http://localhost:3001/categories/start_time/${id}`,
+          {
+            method: "PATCH",
+          }
+        );
+      } else {
+        const resEndTime = await fetch(
+          `http://localhost:3001/categories/end_time/${id}`,
+          {
+            method: "PATCH",
+          }
+        );
+      }
+
       mutate();
 
       toast.success("There you Go!!!, Running has Changed", { duration: 1000 });
@@ -91,12 +101,12 @@ const tableBody = () => {
             </td>
             <td>{convertDateTimeMillis(category.start_sch)}</td>
             <td>{convertDateTimeMillis(category.end_sch)}</td>
-            <td className="text-center">
+            <td>
               {category.start_time === "0"
                 ? "-"
                 : convertDateTimeMillis(category.start_time)}
             </td>
-            <td className="text-center">
+            <td>
               {category.end_time === "0"
                 ? "-"
                 : convertDateTimeMillis(category.end_time)}

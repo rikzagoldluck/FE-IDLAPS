@@ -48,8 +48,8 @@ export default function AddEvent() {
       body: JSON.stringify({
         name,
         description,
-        start_time: dateTimeToUnix(start_time),
-        end_time: dateTimeToUnix(end_time),
+        start_sch: dateTimeToUnix(start_time),
+        end_sch: dateTimeToUnix(end_time),
         sex,
         distance,
         lap,

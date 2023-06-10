@@ -29,13 +29,15 @@ export default function Page({ params }: { params: { id: number } }) {
       <Navbar title={"Category Championship"} />
       <div className="py-10 px-10">
         <div className="overflow-x-auto">
-          <table className="table table-zebra w-full font-bold">
+          <table className="table table-zebra w-full font-bold text-center">
             <thead>
               <tr>
                 <th>#</th>
                 <th>Rider</th>
+                <th>Team</th>
                 <th>BIB</th>
-                <th>Total Time</th>
+                <th>TIME</th>
+                <th>GAP</th>
 
                 {Array.from({ length: lap }).map((_, index) => (
                   <th key={index}>Lap {index + 1}</th>
@@ -47,8 +49,33 @@ export default function Page({ params }: { params: { id: number } }) {
                 <tr key={index}>
                   <td>{index + 1}</td>
                   <td>{pembalap.name}</td>
+                  <td>{pembalap.teams.name}</td>
                   <td>{pembalap.bib}</td>
-                  <td>{timeDifference(start_time, pembalap.total_waktu)}</td>
+                  <td>
+                    {timeDifference(
+                      start_time,
+                      Number(pembalap.total_waktu)
+                    ) === "NaN:NaN:NaN"
+                      ? "00:00:00"
+                      : timeDifference(
+                          start_time,
+                          Number(pembalap.total_waktu)
+                        )}
+                  </td>
+                  <td>
+                    {timeDifference(
+                      start_time,
+                      Number(pembalap.total_waktu)
+                    ) === "NaN:NaN:NaN"
+                      ? "00:00:00"
+                      : index != 0
+                      ? "+" +
+                        timeDifference(
+                          riders[index - 1].total_waktu,
+                          Number(pembalap.total_waktu)
+                        )
+                      : "-"}
+                  </td>
                   {pembalap.race_results.map((lap, lapIndex) => {
                     return <td key={lapIndex}>{lap.finish_time}</td>;
                   })}

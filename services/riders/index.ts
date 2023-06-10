@@ -2,8 +2,6 @@ export async function getRiders() {
   const res = await fetch("http://localhost:3001/riders", {
     cache: "no-store",
   });
-  if (!res.ok) throw new Error(res.statusText);
-
   return res.json();
 }
 

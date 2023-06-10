@@ -35,15 +35,22 @@ export const unixToInput = (unix: string) => {
 
 export const dateTimeToUnix = (datetime: string) => {
   const date = new Date(datetime);
-  return date.getTime();
+  return date.getTime().toString();
 };
+
+function formatTime(time: number) {
+  return time < 10 ? "0" + time : time; // Menambahkan 0 di depan jika waktu kurang dari 10
+}
 
 // TIMEDIFFEERENCE BETWEEN TWICE UNIX TIME SHOW IN hh:mm:ss
 export const timeDifference = (start: number, end: number) => {
-  let difference = end - start;
+  let difference = Math.abs(end - start) / 1000; // Menghitung selisih dalam detik
+
   let hours = Math.floor(difference / 3600);
   let minutes = Math.floor((difference % 3600) / 60);
-  let seconds = Math.floor((difference % 3600) % 60);
+  let seconds = Math.floor(difference % 60);
 
-  return `${hours}:${minutes}:${seconds}`;
+  return (
+    formatTime(hours) + ":" + formatTime(minutes) + ":" + formatTime(seconds)
+  );
 };
