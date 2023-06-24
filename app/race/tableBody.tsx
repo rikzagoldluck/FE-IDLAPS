@@ -1,102 +1,117 @@
 "use client";
-import { Category } from "@/services/categories/data-type";
+import { Category, CategoryResponse } from "@/services/categories/data-type";
 import { convertDateTime, convertDateTimeMillis } from "@/services/converter";
-import Link from "next/link";
-import React, { SyntheticEvent, useState } from "react";
-import { getCategoryInRace } from "@/services/categories";
-import useSWR from "swr";
+import React, { SyntheticEvent, useEffect, useState } from "react";
+import {
+  getCategoriesByEvent,
+  updateCategoriesByEvent,
+} from "@/services/categories";
 import toast from "react-hot-toast";
-const tableBody = () => {
-  // const { categories } = props;
+import Link from "next/link";
+const TableBody = ({
+  eventSelected,
+  buttonState,
+}: {
+  eventSelected: string;
+  buttonState: string;
+}) => {
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [checkboxes, setCheckboxes] = useState<{ [key: string]: boolean }>({});
 
-  const { data, error, isLoading, mutate } = useSWR("getCategroiesInRace", () =>
-    getCategoryInRace()
-  );
-  if (isLoading) {
-    return (
-      <tbody>
-        <tr>
-          <td className="text-center" colSpan={10}>
-            Loading...
-          </td>
-        </tr>
-      </tbody>
-    );
-  }
-
-  if (error) {
-    return (
-      <tbody>
-        <tr>
-          <td className="text-center" colSpan={10}>
-            {error}
-          </td>
-        </tr>
-      </tbody>
-    );
-  }
-  if (typeof data.status !== "undefined" && data.status === "Server Error") {
-    alert("Something went wrong, please try again later");
-    return (
-      <tbody>
-        <tr>
-          <td className="text-center">{data.message}</td>
-        </tr>
-      </tbody>
-    );
-  }
-  const categories: Category[] = data ? data.data : [];
-
-  const handleChangeCheckbox = async (e: SyntheticEvent) => {
-    const id = e.target.getAttribute("data-id");
-
-    try {
-      const res = await fetch(
-        `http://localhost:3001/categories/run/${id}/${e.target.checked}`,
-        {
-          method: "PATCH",
-        }
-      );
-
-      if (!Boolean(e.target.checked)) {
-        const resStartTime = await fetch(
-          `http://localhost:3001/categories/start_time/${id}`,
-          {
-            method: "PATCH",
-          }
-        );
-      } else {
-        const resEndTime = await fetch(
-          `http://localhost:3001/categories/end_time/${id}`,
-          {
-            method: "PATCH",
-          }
-        );
-      }
-
-      mutate();
-
-      toast.success("There you Go!!!, Running has Changed", { duration: 1000 });
-    } catch (error) {
-      toast.error("Something went wrong in toggle : " + error, {
-        duration: 1000,
-      });
-    }
+  const handleCheckboxChange = (checkboxName: string) => {
+    setCheckboxes((prevCheckboxes) => ({
+      ...prevCheckboxes,
+      [checkboxName]: !prevCheckboxes[checkboxName],
+    }));
   };
+
+  useEffect(() => {
+    if (buttonState === "") return;
+    const checkedCategories = Object.keys(checkboxes)
+      .filter((key) => checkboxes[key])
+      .map((key) => parseInt(key));
+
+    if (checkedCategories.length === 0) {
+      toast("Please select category first", {
+        duration: 3000,
+        icon: "ℹ️",
+      });
+      return;
+    }
+
+    const data = {
+      event_id: eventSelected,
+      categories: checkedCategories,
+    };
+
+    updateCategoriesByEvent(buttonState.split("-")[0], data)
+      .then((res) => {
+        if (res.status === "Server Error") {
+          toast.error(res.message);
+          return;
+        }
+
+        toast.success(res.message);
+      })
+      .catch((err) => {
+        toast.error(err.message);
+      })
+      .finally(() => {
+        if (eventSelected === "choose-event" || eventSelected === "") {
+          toast("Please select event first", { duration: 3000, icon: "ℹ️" });
+          return;
+        }
+
+        getCategoriesByEvent(eventSelected)
+          .then((res) => {
+            if (res.status === "Server Error") {
+              toast.error(res.message);
+              return;
+            }
+
+            setCategories(res.data);
+          })
+          .catch((err) => {
+            toast.error(err.message);
+          });
+        setCheckboxes({});
+      });
+  }, [buttonState]);
+
+  useEffect(() => {
+    if (eventSelected === "") return;
+    if (eventSelected === "choose-event") {
+      toast("Please select event first", { duration: 3000, icon: "ℹ️" });
+      return;
+    }
+
+    getCategoriesByEvent(eventSelected)
+      .then((res) => {
+        if (res.status === "Server Error") {
+          toast.error(res.message);
+          return;
+        }
+
+        setCategories(res.data);
+      })
+      .catch((err) => {
+        toast.error(err.message);
+      });
+  }, [eventSelected]);
 
   return (
     <tbody>
-      {categories.length > 0 ? (
+      {categories.length > 0 && eventSelected != "choose-event" ? (
         categories.map((category: Category, index: number) => (
           <tr key={category.id}>
             <td>{index + 1}</td>
             <td>
               {category.run ? (
                 <Link href={`/race/${category.id}`} className="link link-hover">
-                  {category.name + " - " + category.events.name}
+                  <p>{category.name}</p>
                 </Link>
               ) : (
-                category.name + " - " + category.events.name
+                <p>{category.name}</p>
               )}
             </td>
             <td>{convertDateTimeMillis(category.start_sch)}</td>
@@ -120,7 +135,15 @@ const tableBody = () => {
                 type="checkbox"
                 className="toggle toggle-success"
                 checked={category.run}
-                onChange={handleChangeCheckbox}
+                readOnly
+              />
+            </td>
+            <td>
+              <input
+                type="checkbox"
+                className="checkbox checkbox-primary"
+                checked={checkboxes[category.id] || false}
+                onChange={() => handleCheckboxChange(category.id.toString())}
               />
             </td>
           </tr>
@@ -128,7 +151,7 @@ const tableBody = () => {
       ) : (
         <tr>
           <td className="text-center" colSpan={10}>
-            No any data, please add category to race today instead{" "}
+            No any data, please choose event or add event first
           </td>
         </tr>
       )}
@@ -136,4 +159,4 @@ const tableBody = () => {
   );
 };
 
-export default tableBody;
+export default TableBody;

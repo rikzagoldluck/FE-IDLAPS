@@ -1,18 +1,21 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 type Rider = {
   id: number;
   name: string;
 };
 
-export default function DeleteRider(rider: Rider) {
+export default function DeleteRider({
+  rider,
+  onDeleted,
+}: {
+  rider: Rider;
+  onDeleted: Function;
+}) {
   const [modal, setModal] = useState(false);
   const [isMutating, setIsMutating] = useState(false);
-
-  const router = useRouter();
 
   async function handleDelete(riderId: number) {
     setIsMutating(true);
@@ -31,7 +34,7 @@ export default function DeleteRider(rider: Rider) {
     toast.success("Rider deleted", { duration: 1000 });
     setIsMutating(false);
 
-    router.refresh();
+    onDeleted();
     setModal(false);
   }
 

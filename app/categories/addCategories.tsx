@@ -2,11 +2,19 @@
 
 import { SyntheticEvent, useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { EventResponse } from "@/services/events/data-type";
+import { Event, EventResponse } from "@/services/events/data-type";
 import { getEvents, getEventsWithCaching } from "@/services/events";
 import toast from "react-hot-toast";
-import { dateTimeToUnix } from "@/services/converter";
-export default function AddEvent() {
+import { dateTimeToUnix, unixToDDMMYYYY } from "@/services/converter";
+export default function AddCategory({
+  state,
+  eventSelected,
+  onAdded,
+}: {
+  state: boolean;
+  eventSelected: string;
+  onAdded: Function;
+}) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [start_time, setStartTime] = useState("");
@@ -15,24 +23,10 @@ export default function AddEvent() {
   const [distance, setDistance] = useState(0);
   const [lap, setLap] = useState(0);
   const [run, setRun] = useState(false);
-  const [event_id, setEventId] = useState(0);
-  const [events, setEvents] = useState<EventResponse>({
-    message: "",
-    data: [],
-  });
   const [modal, setModal] = useState(false);
   const [isMutating, setIsMutating] = useState(false);
 
   const router = useRouter();
-
-  const getEventList = useCallback(async () => {
-    const data = await getEventsWithCaching();
-    setEvents(data);
-  }, [getEventsWithCaching]);
-
-  useEffect(() => {
-    getEventList();
-  }, []);
 
   async function handleSubmit(e: SyntheticEvent) {
     e.preventDefault();
@@ -54,7 +48,7 @@ export default function AddEvent() {
         distance,
         lap,
         run,
-        event_id,
+        event_id: eventSelected,
       }),
     });
 
@@ -76,9 +70,9 @@ export default function AddEvent() {
     setDistance(0);
     setLap(0);
     setRun(false);
-    setEventId(0);
 
-    router.refresh();
+    // router.refresh();
+    onAdded();
     setModal(false);
   }
 
@@ -90,13 +84,13 @@ export default function AddEvent() {
     setSex(value);
   }
 
-  function handleSelect(e: SyntheticEvent) {
-    setEventId(e.currentTarget.value);
-  }
-
   return (
-    <div>
-      <button className="btn btn-primary" onClick={handleChange}>
+    <div className="flex justify-end">
+      <button
+        className="btn btn-primary btn-block md:w-1/2 "
+        onClick={handleChange}
+        disabled={state}
+      >
         Add Category
       </button>
 
@@ -136,30 +130,6 @@ export default function AddEvent() {
                     />
                   </div>
                 </div>
-                <div className="sm:col-span-3">
-                  <label htmlFor="event-name" className="label-text">
-                    Event
-                  </label>
-                  <div className="mt-2">
-                    <div className="input-group">
-                      <select
-                        required={true}
-                        className="select select-bordered w-full"
-                        onChange={handleSelect}
-                        defaultValue={"pickone"}
-                      >
-                        <option value={"pickone"}>Pick one</option>
-                        {events.data.length > 0 &&
-                          events.data.map((event) => (
-                            <option key={event.id} value={event.id}>
-                              {`${event.name} - ${event.location}`}
-                            </option>
-                          ))}
-                      </select>
-                    </div>
-                  </div>
-                </div>
-
                 <div className="sm:col-span-3">
                   <label htmlFor="category-sex" className="label-text">
                     Sex
@@ -213,6 +183,28 @@ export default function AddEvent() {
                     />
                   </div>
                 </div>
+                <div className="sm:col-span-3 ">
+                  <label htmlFor="event-distance" className="label-text">
+                    Distance
+                  </label>
+                  <div className="mt-2">
+                    <div className="input-group">
+                      <input
+                        type="number"
+                        name="distance"
+                        id="event-distance"
+                        autoComplete="given-distance"
+                        className="input input-bordered w-full"
+                        value={distance}
+                        min={1}
+                        defaultValue={0}
+                        max={10000}
+                        onChange={(e) => setDistance(Number(e.target.value))}
+                      />
+                      <span>KM</span>
+                    </div>
+                  </div>
+                </div>
 
                 <div className="sm:col-span-3">
                   <label htmlFor="event-start-date" className="label-text">
@@ -247,41 +239,21 @@ export default function AddEvent() {
                   </div>
                 </div>
 
-                <div className="sm:col-span-3 ">
-                  <label htmlFor="event-distance" className="label-text">
-                    Distance
-                  </label>
-                  <div className="mt-2">
-                    <div className="input-group">
-                      <input
-                        type="number"
-                        name="distance"
-                        id="event-distance"
-                        autoComplete="given-distance"
-                        className="input input-bordered w-full"
-                        value={distance}
-                        min={1}
-                        max={10000}
-                        onChange={(e) => setDistance(Number(e.target.value))}
-                      />
-                      <span>KM</span>
-                    </div>
-                  </div>
-                </div>
-
                 <div className="sm:col-span-3">
-                  <label htmlFor="event-race-type" className="label-text">
+                  <label htmlFor="event-lap" className="label-text">
                     Race Lap
                   </label>
                   <div className="mt-2">
                     <input
                       type="number"
                       name="type"
-                      id="event-race-type"
-                      placeholder="Road Bike, Mountain Bike, etc..."
+                      id="event-lap"
                       className="input input-bordered w-full"
                       value={lap}
                       onChange={(e) => setLap(Number(e.target.value))}
+                      min={1}
+                      max={100}
+                      defaultValue={0}
                     />
                   </div>
                 </div>

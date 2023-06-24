@@ -1,5 +1,6 @@
 import Link from "next/link";
-
+import InputInterval from "../InputInterval";
+import SelectTheme from "../SelectTheme";
 type NavbarProps = {
   title: string;
 };
@@ -22,20 +23,24 @@ export default function Navbar(navbarProps: NavbarProps) {
             </svg>
           </a>
         </div>
-        <div className="flex justify-end flex-1 px-2">
+        <div className="flex justify-end flex-1 px-2 gap-x-5">
+          {title === "race" && <InputInterval />}
           <div className="flex items-stretch">
             <Link
               className={
                 title === "race"
-                  ? "btn btn-primary rounded-btn"
-                  : "btn btn-ghost rounded-btn"
+                  ? "btn btn-primary rounded-btn btn-sm md:btn-md lg:btn-md"
+                  : "btn btn-ghost rounded-btn btn-sm md:btn-md lg:btn-md"
               }
               href={"/race"}
             >
-              Race Now
+              Race Setting
             </Link>
             <div className="dropdown dropdown-end">
-              <label tabIndex={0} className="btn btn-ghost rounded-btn">
+              <label
+                tabIndex={0}
+                className="btn btn-ghost rounded-btn btn-sm md:btn-md lg:btn-md"
+              >
                 Master{" "}
                 <svg
                   className="fill-current"
@@ -49,7 +54,7 @@ export default function Navbar(navbarProps: NavbarProps) {
               </label>
               <ul
                 tabIndex={0}
-                className="menu dropdown-content p-2 shadow bg-base-100 rounded-box w-52 mt-4"
+                className="menu dropdown-content p-2 shadow bg-base-100 rounded-box w-52 mt-4 "
               >
                 <li>
                   <Link
@@ -80,6 +85,9 @@ export default function Navbar(navbarProps: NavbarProps) {
                   >
                     Team
                   </Link>
+                </li>
+                <li>
+                  <SelectTheme />
                 </li>
               </ul>
             </div>

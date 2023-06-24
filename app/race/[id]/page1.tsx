@@ -43,8 +43,6 @@ export default async function CategoryChampionship() {
     );
   }
 
-  console.log(data);
-
   return (
     <>
       <Navbar title={"Category Championship"} />

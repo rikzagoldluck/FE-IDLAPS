@@ -1,20 +1,10 @@
 import Navbar from "@/components/Navbar";
 import Form from "./Form";
 import { Rider } from "@/services/riders/data-type";
-import { Toaster } from "react-hot-toast";
+import { Toaster, toast } from "react-hot-toast";
 export const metadata = {
   title: "Rider Edit",
 };
-
-// export async function generateStaticParams() {
-//   const events = await fetch("http://localhost:3001/events").then((res) =>
-//     res.json()
-//   );
-
-// return events.data.map((event: Event) => ({
-//   id: event.id,
-// }));
-// }
 
 export default async function RiderEdit({
   params,
@@ -27,12 +17,10 @@ export default async function RiderEdit({
   });
   const resBody = await res.json();
   if (!res.ok) {
-    alert(`Something went wrong : ${resBody.message}`);
+    toast.error(`Something went wrong : ${resBody.message}`);
     return;
   }
   const rider: Rider = resBody.data;
-  // console.log(event);
-
   return (
     <>
       <div>

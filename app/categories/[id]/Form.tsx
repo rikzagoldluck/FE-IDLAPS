@@ -180,7 +180,6 @@ export default function Form({ category }: { category: Category }) {
                     onChange={handleSelect}
                     value={event_id}
                   >
-                    <option value={"pickone"}>Pick one</option>
                     {events.data.length > 0 &&
                       events.data.map((event) => (
                         <option key={event.id} value={event.id}>

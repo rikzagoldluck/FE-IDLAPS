@@ -30,3 +30,12 @@ export async function getRidersRunInCategory(id: number) {
   // console.log(result.data[0]);
   return result.data;
 }
+
+export async function getRidersByCategory(id: string) {
+  const res = await fetch(`http://localhost:3001/riders/category/${id}`, {
+    cache: "no-store",
+  });
+  if (!res.ok) throw new Error(res.statusText);
+
+  return res.json();
+}

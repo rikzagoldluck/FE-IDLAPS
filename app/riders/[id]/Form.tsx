@@ -11,6 +11,11 @@ import { getEventsWithCaching } from "@/services/events";
 import { getTeamsWithCaching } from "@/services/teams";
 import { getCategoriesByEvent } from "@/services/categories";
 import toast from "react-hot-toast";
+import { BeaconResponse } from "@/services/beacons/data-type";
+import {
+  getAvailBeaconsAndChoosenInEvents,
+  getAvailBeaconsInEvents,
+} from "@/services/beacons";
 export default function Form({ rider }: { rider: Rider }) {
   const [name, setName] = useState(rider.name);
   const [age, setAge] = useState(rider.age);
@@ -20,18 +25,24 @@ export default function Form({ rider }: { rider: Rider }) {
   const [id_beacon, setidBeacon] = useState(rider.id_beacon);
   const [mac_no, setMacNo] = useState(rider.mac_no);
   const [note_1, setNote1] = useState(rider.note_1);
-  const [eventSelected, setEventSeleceted] = useState(rider.event_id);
+  const [eventSelected, setEventSeleceted] = useState(
+    rider.categories.events.id
+  );
   const [teamSelected, setTeamSeleceted] = useState(rider.team_id);
-  const [categorySelected, setCategorySeleceted] = useState(rider.category_id);
+  const [categorySelected, setCategorySeleceted] = useState(
+    rider.categories.id
+  );
   const [events, setEvents] = useState<EventResponse>({
     message: "",
     data: [],
   });
-  const [categories, setCategories] = useState<CategoryResponse>({
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [teams, setTeams] = useState<TeamResponse>({
     message: "",
     data: [],
   });
-  const [teams, setTeams] = useState<TeamResponse>({
+
+  const [beacons, setBeacons] = useState<BeaconResponse>({
     message: "",
     data: [],
   });
@@ -50,11 +61,36 @@ export default function Form({ rider }: { rider: Rider }) {
   }, []);
 
   useEffect(() => {
-    getCategoriesByEvent(eventSelected.toString())
+    getCategoriesByEvent(
+      typeof eventSelected === "number"
+        ? eventSelected.toString()
+        : eventSelected
+    )
       .then((res) => {
-        setCategories(res);
+        if (res.status === "Server Error") {
+          toast.error(res.message);
+          return;
+        }
+        setCategories(res.data);
       })
-      .catch((err) => alert("Failed to fetch categories by event :   " + err));
+      .catch((err) =>
+        toast.error("Failed to fetch categories by event : " + err)
+      );
+
+    getAvailBeaconsAndChoosenInEvents(eventSelected, id_beacon.toString())
+      .then((res) => {
+        setBeacons(res);
+      })
+      .catch((res) => {
+        if (res.message === "Failed to fetch : 404 Not Found") {
+          toast.error(
+            "There is no category at this event, Please add category first",
+            { duration: 3000 }
+          );
+          return;
+        }
+        toast.error(res.message, { duration: 3000 });
+      });
   }, [eventSelected]);
 
   const router = useRouter();
@@ -78,7 +114,6 @@ export default function Form({ rider }: { rider: Rider }) {
         id_beacon,
         mac_no,
         note_1,
-        event_id: eventSelected,
         category_id: categorySelected,
       }),
     });
@@ -92,8 +127,7 @@ export default function Form({ rider }: { rider: Rider }) {
     toast.success("Rider updated", { duration: 1000 });
 
     setIsMutating(false);
-    router.push("/riders");
-    router.refresh();
+    router.back();
   }
 
   return (
@@ -221,16 +255,21 @@ export default function Form({ rider }: { rider: Rider }) {
                 ID Beacon
               </label>
               <div className="mt-2">
-                <input
-                  type="number"
-                  name="beacon"
-                  id="rider-beacon"
-                  className="input input-bordered w-full"
-                  value={id_beacon}
-                  min={0}
-                  minLength={5}
-                  onChange={(e) => setidBeacon(Number(e.target.value))}
-                />
+                <div className="input-group">
+                  <select
+                    required={true}
+                    className="select select-bordered w-full"
+                    onChange={(e) => setidBeacon(parseInt(e.target.value))}
+                    value={id_beacon}
+                  >
+                    {beacons.data.length > 0 &&
+                      beacons.data.map((beacon) => (
+                        <option key={beacon.id} value={beacon.id}>
+                          {beacon.tag_id}
+                        </option>
+                      ))}
+                  </select>
+                </div>
               </div>
             </div>
             <div className="sm:col-span-3">
@@ -262,7 +301,6 @@ export default function Form({ rider }: { rider: Rider }) {
                     onChange={(e) => setTeamSeleceted(parseInt(e.target.value))}
                     value={teamSelected}
                   >
-                    <option value={"pickone"}>Pick one</option>
                     {teams.data.length > 0 &&
                       teams.data.map((team) => (
                         <option key={team.id} value={team.id}>
@@ -287,7 +325,6 @@ export default function Form({ rider }: { rider: Rider }) {
                     }
                     value={eventSelected}
                   >
-                    <option value={"pickone"}>Pick one</option>
                     {events.data.length > 0 &&
                       events.data.map((event) => (
                         <option key={event.id} value={event.id}>
@@ -311,12 +348,11 @@ export default function Form({ rider }: { rider: Rider }) {
                     onChange={(e) =>
                       setCategorySeleceted(parseInt(e.target.value))
                     }
-                    disabled={categories.data.length === 0}
+                    disabled={categories.length === 0}
                     value={categorySelected}
                   >
-                    <option value={"pickone"}>Pick one</option>
-                    {categories.data.length > 0 &&
-                      categories.data.map((category: Category) => (
+                    {categories.length > 0 &&
+                      categories.map((category: Category) => (
                         <option key={category.id} value={category.id}>
                           {`${category.name}`}
                         </option>

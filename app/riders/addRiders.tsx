@@ -2,32 +2,32 @@
 
 import { SyntheticEvent, useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { EventResponse } from "@/services/events/data-type";
-import { Category, CategoryResponse } from "@/services/categories/data-type";
 import { TeamResponse } from "@/services/teams/data-type";
-import { getEventsWithCaching } from "@/services/events";
-import { getCategoriesByEvent, getCategory } from "@/services/categories";
-import { getTeam, getTeamsWithCaching } from "@/services/teams";
+import { getTeamsWithCaching } from "@/services/teams";
 
 import toast from "react-hot-toast";
+import { Beacon, BeaconResponse } from "@/services/beacons/data-type";
+import { getAvailBeaconsInEvents } from "@/services/beacons";
 
-export default function AddRider() {
+export default function AddRider({
+  eventSelected,
+  categorySelected,
+  onAdded,
+  beacons,
+}: {
+  eventSelected: string;
+  categorySelected: string;
+  onAdded: Function;
+  beacons: BeaconResponse;
+}) {
   const [name, setName] = useState("");
   const [age, setAge] = useState(0);
   const [nationality, setNationality] = useState("");
   const [bib, setBIB] = useState("");
   const [vci_num, setVciNum] = useState("");
-  const [id_beacon, setidBeacon] = useState(0);
   const [mac_no, setMacNo] = useState("");
   const [note_1, setNote1] = useState("");
-  const [events, setEvents] = useState<EventResponse>({
-    message: "",
-    data: [],
-  });
-  const [categories, setCategories] = useState<CategoryResponse>({
-    message: "",
-    data: [],
-  });
+
   const [teams, setTeams] = useState<TeamResponse>({
     message: "",
     data: [],
@@ -35,31 +35,35 @@ export default function AddRider() {
 
   const [modal, setModal] = useState(false);
   const [isMutating, setIsMutating] = useState(false);
-  const [eventSelected, setEventSeleceted] = useState("");
   const [teamSelected, setTeamSeleceted] = useState("");
-  const [categorySelected, setCategorySeleceted] = useState("");
+  const [beaconSelected, setBeaconSeleceted] = useState("");
+  const [disable, setDisable] = useState(true);
 
-  const router = useRouter();
-
-  const getEventAndTeamList = useCallback(async () => {
-    const eventsData = await getEventsWithCaching();
-    const teamsData = await getTeamsWithCaching();
-    setEvents(eventsData);
-    setTeams(teamsData);
-  }, [getEventsWithCaching, getTeamsWithCaching]);
+  const getTeamsAndBeaconList = useCallback(async () => {
+    try {
+      const teamsData = await getTeamsWithCaching();
+      setTeams(teamsData);
+    } catch (error: any) {
+      toast.error(error.message, { duration: 3000 });
+    }
+  }, [getTeamsWithCaching]);
 
   useEffect(() => {
-    getEventAndTeamList();
+    getTeamsAndBeaconList();
   }, []);
 
   useEffect(() => {
-    if (eventSelected == "") return;
-    getCategoriesByEvent(eventSelected)
-      .then((res) => {
-        setCategories(res);
-      })
-      .catch((err) => alert("Failed to fetch categories by event :   " + err));
-  }, [eventSelected]);
+    if (
+      eventSelected === "" ||
+      categorySelected === "" ||
+      eventSelected === "choose-event" ||
+      categorySelected === "choose-category"
+    ) {
+      setDisable(true);
+    } else {
+      setDisable(false);
+    }
+  }, [eventSelected, categorySelected]);
 
   async function handleSubmit(e: SyntheticEvent) {
     e.preventDefault();
@@ -79,7 +83,7 @@ export default function AddRider() {
         team_id: teamSelected,
         bib,
         vci_num,
-        id_beacon,
+        id_beacon: beaconSelected,
         mac_no,
         note_1,
         category_id: categorySelected,
@@ -90,9 +94,10 @@ export default function AddRider() {
       setIsMutating(false);
       const resBody = await res.json();
       toast.error("Something went wrong" + resBody.message, { duration: 1000 });
-      alert(`Something went wrong : ${resBody.message}`);
       return;
     }
+    onAdded();
+
     toast.success("Rider added", { duration: 1000 });
     setIsMutating(false);
 
@@ -102,13 +107,9 @@ export default function AddRider() {
     setTeamSeleceted("");
     setBIB("");
     setVciNum("");
-    setidBeacon(0);
     setMacNo("");
     setNote1("");
-    setEventSeleceted("");
-    setCategorySeleceted("");
 
-    router.refresh();
     setModal(false);
   }
 
@@ -117,8 +118,12 @@ export default function AddRider() {
   }
 
   return (
-    <div>
-      <button className="btn btn-primary" onClick={handleChange}>
+    <div className="flex justify-end">
+      <button
+        className="btn btn-primary btn-block md:w-1/2"
+        onClick={handleChange}
+        disabled={disable}
+      >
         Add Rider
       </button>
 
@@ -184,7 +189,7 @@ export default function AddRider() {
                       type="number"
                       name="age"
                       id="rider-age"
-                      min={0}
+                      min={1}
                       max={200}
                       className="input input-bordered w-full"
                       value={age}
@@ -247,19 +252,25 @@ export default function AddRider() {
                 </div>
                 <div className="sm:col-span-3">
                   <label htmlFor="rider-beacon" className="label-text">
-                    ID Beacon
+                    Beacon
                   </label>
                   <div className="mt-2">
-                    <input
-                      type="number"
-                      name="beacon"
-                      id="rider-beacon"
-                      className="input input-bordered w-full"
-                      value={id_beacon}
-                      min={0}
-                      minLength={5}
-                      onChange={(e) => setidBeacon(Number(e.target.value))}
-                    />
+                    <div className="input-group">
+                      <select
+                        required={true}
+                        className="select select-bordered w-full"
+                        onChange={(e) => setBeaconSeleceted(e.target.value)}
+                        defaultValue={"pickone"}
+                      >
+                        <option value={"pickone"}>Pick one</option>
+                        {beacons.data.length > 0 &&
+                          beacons.data.map((beacon) => (
+                            <option key={beacon.id} value={beacon.id}>
+                              {beacon.tag_id}
+                            </option>
+                          ))}
+                      </select>
+                    </div>
                   </div>
                 </div>
                 <div className="sm:col-span-3">
@@ -296,57 +307,6 @@ export default function AddRider() {
                           teams.data.map((team) => (
                             <option key={team.id} value={team.id}>
                               {`${team.name} - ${team.nationality}`}
-                            </option>
-                          ))}
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                <div className="sm:col-span-3">
-                  <label htmlFor="event-select" className="label-text">
-                    Event
-                  </label>
-                  <div className="mt-2">
-                    <div className="input-group">
-                      <select
-                        required={true}
-                        className="select select-bordered w-full"
-                        onChange={(e) => setEventSeleceted(e.target.value)}
-                        defaultValue={"pickone"}
-                      >
-                        <option value={"pickone"}>Pick one</option>
-                        {events.data.length > 0 &&
-                          events.data.map((event) => (
-                            <option key={event.id} value={event.id}>
-                              {`${event.name} - ${event.location}`}
-                            </option>
-                          ))}
-                      </select>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="sm:col-span-3">
-                  <label htmlFor="categories-select" className="label-text">
-                    Category
-                  </label>
-                  <div className="mt-2">
-                    <div className="input-group">
-                      <select
-                        required={true}
-                        className="select select-bordered w-full"
-                        onChange={(e) => setCategorySeleceted(e.target.value)}
-                        defaultValue={"pickone"}
-                        disabled={
-                          categories.data ? categories.data.length === 0 : true
-                        }
-                      >
-                        <option value={"pickone"}>Pick one</option>
-                        {categories.data &&
-                          categories.data.length > 0 &&
-                          categories.data.map((category: Category) => (
-                            <option key={category.id} value={category.id}>
-                              {`${category.name}`}
                             </option>
                           ))}
                       </select>

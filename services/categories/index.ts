@@ -29,3 +29,23 @@ export async function getCategoriesByEvent(id: string) {
 
   return res.json();
 }
+
+export async function updateCategoriesByEvent(forWhat: string, body: any) {
+  const res = await fetch(
+    `http://localhost:3001/categories/parcel/${forWhat}`,
+    {
+      cache: "no-store",
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error(res.statusText);
+  }
+
+  return res.json();
+}

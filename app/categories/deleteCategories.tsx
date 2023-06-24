@@ -1,18 +1,21 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 type Category = {
   id: number;
   name: string;
 };
 
-export default function DeleteCategory(category: Category) {
+export default function DeleteCategory({
+  category,
+  onDeleted,
+}: {
+  category: Category;
+  onDeleted: Function;
+}) {
   const [modal, setModal] = useState(false);
   const [isMutating, setIsMutating] = useState(false);
-
-  const router = useRouter();
 
   async function handleDelete(categoryId: number) {
     setIsMutating(true);
@@ -31,7 +34,7 @@ export default function DeleteCategory(category: Category) {
 
     setIsMutating(false);
 
-    router.refresh();
+    onDeleted();
     setModal(false);
   }
 

@@ -37,8 +37,6 @@ export default async function tableBody({ id }: Props) {
     );
   }
 
-  console.log(data);
-
   //   const content = <></>;
 
   // const content = riders.map((pembalap: Rider, index: number) => {

@@ -1,7 +1,7 @@
 "use client";
 
 import Navbar from "@/components/Navbar";
-import { timeDifference } from "@/services/converter";
+import { convertDateTimeMillis, timeDifference } from "@/services/converter";
 import { getRidersRunInCategory } from "@/services/riders";
 import { Rider } from "@/services/riders/data-type";
 import useSWR from "swr";
@@ -14,13 +14,43 @@ export default function Page({ params }: { params: { id: number } }) {
   );
 
   if (isLoading) {
-    return;
+    return <></>;
   }
   if (error) {
-    return;
+    return <></>;
   }
-  if (!data) return;
+  if (!data) return <></>;
   const riders: Rider[] = data;
+
+  if (riders.length === 0) {
+    return (
+      <>
+        <Navbar title={"Category Championship"} />
+        <div className="py-10 px-10">
+          <div className="overflow-x-auto">
+            <table className="table table-zebra w-full font-bold text-center">
+              <thead>
+                <tr>
+                  <th>POS</th>
+                  <th>Rider</th>
+                  <th>Team</th>
+                  <th>BIB</th>
+                  <th>TIME</th>
+                  <th>GAP</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td colSpan={6}>No Data</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </>
+    );
+  }
+
   const lap = riders[0].categories.lap;
   const start_time = riders[0].categories.start_time;
 
@@ -32,16 +62,17 @@ export default function Page({ params }: { params: { id: number } }) {
           <table className="table table-zebra w-full font-bold text-center">
             <thead>
               <tr>
-                <th>#</th>
+                <th>POS</th>
                 <th>Rider</th>
                 <th>Team</th>
                 <th>BIB</th>
-                <th>TIME</th>
+                <th>START</th>
+                <th>TOTAL TIME</th>
                 <th>GAP</th>
-
                 {Array.from({ length: lap }).map((_, index) => (
                   <th key={index}>Lap {index + 1}</th>
                 ))}
+                <th>Note</th>
               </tr>
             </thead>
             <tbody>
@@ -51,6 +82,7 @@ export default function Page({ params }: { params: { id: number } }) {
                   <td>{pembalap.name}</td>
                   <td>{pembalap.teams.name}</td>
                   <td>{pembalap.bib}</td>
+                  <td>{convertDateTimeMillis(start_time)}</td>
                   <td>
                     {timeDifference(
                       start_time,
@@ -77,8 +109,22 @@ export default function Page({ params }: { params: { id: number } }) {
                       : "-"}
                   </td>
                   {pembalap.race_results.map((lap, lapIndex) => {
-                    return <td key={lapIndex}>{lap.finish_time}</td>;
+                    return (
+                      <td key={lapIndex}>
+                        {timeDifference(start_time, Number(lap.finish_time)) ===
+                        "NaN:NaN:NaN"
+                          ? "00:00:00"
+                          : timeDifference(start_time, Number(lap.finish_time))}
+                      </td>
+                    );
                   })}
+
+                  {Array.from({
+                    length: lap - pembalap.race_results.length,
+                  }).map((_, index) => (
+                    <td key={index}>00:00:00</td>
+                  ))}
+                  <td>{pembalap.note}</td>
                 </tr>
               ))}
             </tbody>
