@@ -63,7 +63,7 @@ export default function TableBody({
                 readOnly
               />
             </td>
-            <td>{rider.note}</td>
+            <td>{rider.note_1}</td>
             <td className="flex gap-3">
               {/* <UpdateRider {...rider} /> */}
               <Link href={`/riders/${rider.id}`}>

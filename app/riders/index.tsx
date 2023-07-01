@@ -27,8 +27,8 @@ export default function index() {
   };
 
   useEffect(() => {
-    if (eventSelected === "" || eventSelected === "choose-event") return;
-    getAvailBeaconsInEvents(eventSelected)
+    if (categorySelected === "" || categorySelected === "choose-category") return;
+    getAvailBeaconsInEvents(categorySelected)
       .then((res) => {
         setBeacons(res);
       })
@@ -42,7 +42,7 @@ export default function index() {
         }
         toast.error(res.message, { duration: 3000 });
       });
-  }, [eventSelected, changed]);
+  }, [categorySelected, changed]);
 
   return (
     <div className="py-10 px-10">

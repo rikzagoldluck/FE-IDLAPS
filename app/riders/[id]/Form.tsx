@@ -76,8 +76,10 @@ export default function Form({ rider }: { rider: Rider }) {
       .catch((err) =>
         toast.error("Failed to fetch categories by event : " + err)
       );
+  }, [eventSelected]);
 
-    getAvailBeaconsAndChoosenInEvents(eventSelected, id_beacon.toString())
+  useEffect(() => {
+    getAvailBeaconsAndChoosenInEvents(categorySelected, id_beacon.toString())
       .then((res) => {
         setBeacons(res);
       })
@@ -91,7 +93,7 @@ export default function Form({ rider }: { rider: Rider }) {
         }
         toast.error(res.message, { duration: 3000 });
       });
-  }, [eventSelected]);
+  }, [categorySelected]);
 
   const router = useRouter();
   async function handleUpdate(e: SyntheticEvent) {
@@ -265,7 +267,7 @@ export default function Form({ rider }: { rider: Rider }) {
                     {beacons.data.length > 0 &&
                       beacons.data.map((beacon) => (
                         <option key={beacon.id} value={beacon.id}>
-                          {beacon.tag_id}
+                          {beacon.id}
                         </option>
                       ))}
                   </select>

@@ -1,9 +1,11 @@
 "use client";
 
 import Navbar from "@/components/Navbar";
+import SelectRiderNote from "@/components/SelectRiderNote";
 import { convertDateTimeMillis, timeDifference } from "@/services/converter";
 import { getRidersRunInCategory } from "@/services/riders";
 import { Rider } from "@/services/riders/data-type";
+import { Toaster } from "react-hot-toast";
 import useSWR from "swr";
 
 export default function Page({ params }: { params: { id: number } }) {
@@ -20,9 +22,7 @@ export default function Page({ params }: { params: { id: number } }) {
     return <></>;
   }
   if (!data) return <></>;
-  const riders: Rider[] = data;
-
-  if (riders.length === 0) {
+  if (data.length === 0) {
     return (
       <>
         <Navbar title={"Category Championship"} />
@@ -50,16 +50,48 @@ export default function Page({ params }: { params: { id: number } }) {
       </>
     );
   }
-
+  const riders: Rider[] = data;
   const lap = riders[0].categories.lap;
   const start_time = riders[0].categories.start_time;
+
+  riders.sort((a, b) => {
+    // Urutan berdasarkan jumlah lap terbanyak (descending)
+    if (a.race_results.length !== b.race_results.length) {
+      return b.race_results.length - a.race_results.length;
+    }
+
+    // Jika jumlah lap sama, urutan berdasarkan waktu tercepat (ascending)
+    if (
+      a.race_results[a.race_results.length - 1].finish_time !==
+      b.race_results[b.race_results.length - 1].finish_time
+    ) {
+      return (
+        Number(a.race_results[a.race_results.length - 1].finish_time) -
+        Number(b.race_results[b.race_results.length - 1].finish_time)
+      );
+    }
+  });
+
+  riders.sort((a, b) => {
+    const keteranganOrder = {
+      FINISHER: 1,
+      RUN: 2,
+      DNF: 3,
+      DSQ: 4,
+      DNS: 5,
+    };
+    return keteranganOrder[a.note] - keteranganOrder[b.note];
+  });
 
   return (
     <>
       <Navbar title={"Category Championship"} />
+      <div>
+        <Toaster />
+      </div>
       <div className="py-10 px-10">
         <div className="overflow-x-auto">
-          <table className="table table-zebra w-full font-bold text-center">
+          <table className="table table-zebra w-full text-center">
             <thead>
               <tr>
                 <th>POS</th>
@@ -75,7 +107,7 @@ export default function Page({ params }: { params: { id: number } }) {
                 <th>Note</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="font-bold">
               {riders.map((pembalap: Rider, index: number) => (
                 <tr key={index}>
                   <td>{index + 1}</td>
@@ -83,37 +115,48 @@ export default function Page({ params }: { params: { id: number } }) {
                   <td>{pembalap.teams.name}</td>
                   <td>{pembalap.bib}</td>
                   <td>{convertDateTimeMillis(start_time)}</td>
-                  <td>
-                    {timeDifference(
-                      start_time,
-                      Number(pembalap.total_waktu)
-                    ) === "NaN:NaN:NaN"
-                      ? "00:00:00"
-                      : timeDifference(
-                          start_time,
-                          Number(pembalap.total_waktu)
-                        )}
-                  </td>
-                  <td>
-                    {timeDifference(
-                      start_time,
-                      Number(pembalap.total_waktu)
-                    ) === "NaN:NaN:NaN"
-                      ? "00:00:00"
-                      : index != 0
-                      ? "+" +
-                        timeDifference(
-                          riders[index - 1].total_waktu,
-                          Number(pembalap.total_waktu)
-                        )
-                      : "-"}
-                  </td>
+                  {pembalap.total_waktu === "0" && <td>00:00:00.000</td>}
+                  {pembalap.total_waktu !== "0" && (
+                    <td>
+                      {timeDifference(
+                        start_time,
+                        Number(pembalap.total_waktu)
+                      ) === "NaN:NaN:NaN"
+                        ? "00:00:00"
+                        : timeDifference(
+                            start_time,
+                            Number(pembalap.total_waktu)
+                          )}
+                    </td>
+                  )}
+
+                  {pembalap.total_waktu === "0" && index == 0 && <td>-</td>}
+                  {pembalap.total_waktu === "0" && index != 0 && (
+                    <td>+00:00:00.000</td>
+                  )}
+                  {pembalap.total_waktu !== "0" && (
+                    <td>
+                      {timeDifference(
+                        start_time,
+                        Number(pembalap.total_waktu)
+                      ) === "NaN:NaN:NaN"
+                        ? "00:00:00.000"
+                        : index != 0
+                        ? "+" +
+                          timeDifference(
+                            Number(riders[index - 1].total_waktu),
+                            Number(pembalap.total_waktu)
+                          )
+                        : "-"}
+                    </td>
+                  )}
+
                   {pembalap.race_results.map((lap, lapIndex) => {
                     return (
                       <td key={lapIndex}>
                         {timeDifference(start_time, Number(lap.finish_time)) ===
                         "NaN:NaN:NaN"
-                          ? "00:00:00"
+                          ? "00:00:00.000"
                           : timeDifference(start_time, Number(lap.finish_time))}
                       </td>
                     );
@@ -122,9 +165,14 @@ export default function Page({ params }: { params: { id: number } }) {
                   {Array.from({
                     length: lap - pembalap.race_results.length,
                   }).map((_, index) => (
-                    <td key={index}>00:00:00</td>
+                    <td key={index}>00:00:00.000</td>
                   ))}
-                  <td>{pembalap.note}</td>
+                  <td>
+                    <SelectRiderNote
+                      idRider={pembalap.id}
+                      note={pembalap.note}
+                    />
+                  </td>
                 </tr>
               ))}
             </tbody>

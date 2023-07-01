@@ -10,7 +10,7 @@ export type Rider = {
   team_id: number;
   teams: Team;
   bib: string;
-  total_waktu: number;
+  total_waktu: string;
   vci_num: string;
   id_beacon: number;
   mac_no: string;

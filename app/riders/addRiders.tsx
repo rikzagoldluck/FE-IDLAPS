@@ -236,7 +236,7 @@ export default function AddRider({
 
                 <div className="sm:col-span-3">
                   <label htmlFor="rider-vcinum" className="label-text">
-                    VCI Num
+                    UCI Num
                   </label>
                   <div className="mt-2">
                     <input
@@ -266,7 +266,7 @@ export default function AddRider({
                         {beacons.data.length > 0 &&
                           beacons.data.map((beacon) => (
                             <option key={beacon.id} value={beacon.id}>
-                              {beacon.tag_id}
+                              {beacon.id}
                             </option>
                           ))}
                       </select>

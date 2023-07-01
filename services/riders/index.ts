@@ -39,3 +39,19 @@ export async function getRidersByCategory(id: string) {
 
   return res.json();
 }
+
+export async function updateRiderNote(idRider: number, note: string) {
+  const res = await fetch(
+    `http://localhost:3001/riders/${idRider}/note/${note}`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ note }),
+    }
+  );
+  if (!res.ok) throw new Error(res.statusText);
+
+  return res.json();
+}

@@ -44,15 +44,34 @@ function formatTime(time: number) {
 
 // TIMEDIFFEERENCE BETWEEN TWICE UNIX TIME SHOW IN hh:mm:ss
 export const timeDifference = (start: number, end: number) => {
-  let difference = Math.abs(end - start) / 1000; // Menghitung selisih dalam detik
+  // let difference = Math.abs(end - start) / 1000; // Menghitung selisih dalam detik
 
-  let hours = Math.floor(difference / 3600);
-  let minutes = Math.floor((difference % 3600) / 60);
-  let seconds = Math.floor(difference % 60);
+  // let hours = Math.floor(difference / 3600);
+  // let minutes = Math.floor((difference % 3600) / 60);
+  // let seconds = Math.floor(difference % 60);
 
-  return (
-    formatTime(hours) + ":" + formatTime(minutes) + ":" + formatTime(seconds)
-  );
+  // return (
+  //   formatTime(hours) + ":" + formatTime(minutes) + ":" + formatTime(seconds)
+  // );
+
+  const timeDiff = Math.abs(end - start);
+
+  // Convert milliseconds to hours, minutes, seconds, and milliseconds
+  let milliseconds = timeDiff % 1000;
+  let seconds = Math.floor((timeDiff / 1000) % 60);
+  let minutes = Math.floor((timeDiff / (1000 * 60)) % 60);
+  let hours = Math.floor(timeDiff / (1000 * 60 * 60));
+
+  // Format the time components as two digits with leading zeros if necessary
+  milliseconds = milliseconds.toString().padStart(3, "0");
+  seconds = seconds.toString().padStart(2, "0");
+  minutes = minutes.toString().padStart(2, "0");
+  hours = hours.toString().padStart(2, "0");
+
+  // Construct the formatted time difference string
+  const formattedTime = `${hours}:${minutes}:${seconds}.${milliseconds}`;
+
+  return formattedTime;
 };
 
 export const unixToDDMMYYYY = (unix: string) => {
