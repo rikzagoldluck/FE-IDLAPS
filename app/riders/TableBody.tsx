@@ -18,20 +18,41 @@ export default function TableBody({
 }) {
   const [riders, setRiders] = useState<Rider[]>([]);
   const [tableChanged, setTableChanged] = useState(changed);
+  const [selected, setSelected] = useState(categorySelected);
+
+  useEffect(() => {
+   setSelected(categorySelected);
+   if(categorySelected == "" || categorySelected == 'choose-category')return;
+   getRidersByCategory(categorySelected)
+   .then((res) => {
+     if (res.status === "Server Error") {
+       toast.error(res.message);
+       return;
+     }
+     setRiders(res.data);
+   })
+   .catch((err) =>
+     toast.error("Failed to fetch riders by category :   " + err)
+   );
+  }, [])
 
   useEffect(() => {
     onDeleted();
   }, [tableChanged]);
 
   useEffect(() => {
-    if (categorySelected === "choose-category" || categorySelected === "") {
+    setSelected(categorySelected);
+  }, [categorySelected])
+
+  useEffect(() => {
+    if (selected === "choose-category" || selected === "") {
       toast("Please select event and category first", {
-        duration: 3000,
+        duration: 2000,
         icon: "ℹ️",
       });
       return;
     }
-    getRidersByCategory(categorySelected)
+    getRidersByCategory(selected)
       .then((res) => {
         if (res.status === "Server Error") {
           toast.error(res.message);
@@ -42,7 +63,9 @@ export default function TableBody({
       .catch((err) =>
         toast.error("Failed to fetch riders by category :   " + err)
       );
-  }, [categorySelected, changed, tableChanged]);
+  }, [selected, tableChanged]);
+
+  
   return (
     <tbody>
       {riders.length > 0 && categorySelected != "choose-category" ? (

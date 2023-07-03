@@ -1,14 +1,17 @@
 "use client";
 
+import { SelectBoxContext } from "@/app/provider/SelectBox";
 import Navbar from "@/components/Navbar";
 import SelectRiderNote from "@/components/SelectRiderNote";
 import { convertDateTimeMillis, timeDifference } from "@/services/converter";
 import { getRidersRunInCategory } from "@/services/riders";
 import { Rider } from "@/services/riders/data-type";
+import { useContext } from "react";
 import { Toaster } from "react-hot-toast";
 import useSWR from "swr";
 
 export default function Page({ params }: { params: { id: number } }) {
+  const selectBox = useContext(SelectBoxContext)
   const { id } = params;
   //   const router = useRouter();
   const { data, error, isLoading } = useSWR("getRidersRunInCategory", () =>
@@ -53,6 +56,7 @@ export default function Page({ params }: { params: { id: number } }) {
   const riders: Rider[] = data;
   const lap = riders[0].categories.lap;
   const start_time = riders[0].categories.start_time;
+  const categoryName = riders[0].categories.name;
 
   if(riders[0].race_results.length != 0){
     riders.sort((a, b) => {
@@ -94,6 +98,7 @@ export default function Page({ params }: { params: { id: number } }) {
         <Toaster />
       </div>
       <div className="py-10 px-10">
+        <h1 className="text-center text-4xl mb-5">{categoryName}</h1>
         <div className="overflow-x-auto">
           <table className="table table-zebra w-full text-center">
             <thead>

@@ -25,7 +25,6 @@ export default function AddRider({
   const [nationality, setNationality] = useState("");
   const [bib, setBIB] = useState("");
   const [vci_num, setVciNum] = useState("");
-  const [mac_no, setMacNo] = useState("");
   const [note_1, setNote1] = useState("");
 
   const [teams, setTeams] = useState<TeamResponse>({
@@ -84,7 +83,6 @@ export default function AddRider({
         bib,
         vci_num,
         id_beacon: beaconSelected,
-        mac_no,
         note_1,
         category_id: categorySelected,
       }),
@@ -107,7 +105,6 @@ export default function AddRider({
     setTeamSeleceted("");
     setBIB("");
     setVciNum("");
-    setMacNo("");
     setNote1("");
 
     setModal(false);
@@ -241,7 +238,6 @@ export default function AddRider({
                   <div className="mt-2">
                     <input
                       type="text"
-                      required={true}
                       name="vcinum"
                       id="rider-vcinum"
                       className="input input-bordered w-full"
@@ -271,22 +267,6 @@ export default function AddRider({
                           ))}
                       </select>
                     </div>
-                  </div>
-                </div>
-                <div className="sm:col-span-3">
-                  <label htmlFor="rider-mac-no" className="label-text">
-                    No Mac
-                  </label>
-                  <div className="mt-2">
-                    <input
-                      required={true}
-                      type="text"
-                      name="mac_no"
-                      id="rider-mac-no"
-                      className="input input-bordered w-full"
-                      value={mac_no}
-                      onChange={(e) => setMacNo(e.target.value)}
-                    />
                   </div>
                 </div>
 

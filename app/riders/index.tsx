@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import AddRider from "./addRiders";
 import TableBody from "./TableBody";
 import SelectEvent from "@/components/SelectEvent";
@@ -7,26 +7,36 @@ import SelectCategory from "@/components/SelectCategory";
 import { toast } from "react-hot-toast";
 import { getAvailBeaconsInEvents } from "@/services/beacons";
 import { BeaconResponse } from "@/services/beacons/data-type";
+import { SelectBoxContext } from "../provider/SelectBox";
 
 export default function index() {
-  const [eventSelected, setEventSeleceted] = useState("");
-  const [categorySelected, setCategorySeleceted] = useState("");
+  const selectBox = useContext(SelectBoxContext)
+  const [eventSelected, setEventSeleceted] = useState(selectBox.selectedEvent != "" ? selectBox.selectedEvent : "");
+  const [categorySelected, setCategorySeleceted] = useState(selectBox.selectedCategory != "" ? selectBox.selectedCategory : "");
   const [added, setAdded] = useState(false);
   const [beacons, setBeacons] = useState<BeaconResponse>({
     message: "",
     data: [],
   });
+  
 
   const [changed, setChanged] = useState(false);
 
   const handleSelect = (id: string) => {
     setEventSeleceted(id);
+    selectBox.setSelectedEvent(id);
   };
   const handleSelectCategory = (id: string) => {
     setCategorySeleceted(id);
+    selectBox.setSelectedCategory(id);
   };
 
+  useEffect(() => {setEventSeleceted(selectBox.selectedEvent.toString())
+    setCategorySeleceted(selectBox.selectedCategory.toString())}, [])
+ 
+
   useEffect(() => {
+    
     if (categorySelected === "" || categorySelected === "choose-category") return;
     getAvailBeaconsInEvents(categorySelected)
       .then((res) => {
@@ -47,10 +57,12 @@ export default function index() {
   return (
     <div className="py-10 px-10">
       <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-x-5 gap-y-4 place-content-between">
-        <SelectEvent onSelect={handleSelect} />
+        <SelectEvent onSelect={handleSelect} valSelected={eventSelected} />
         <SelectCategory
           onSelect={handleSelectCategory}
           eventSelected={eventSelected}
+
+          valSelected={categorySelected}
         />
 
         <AddRider

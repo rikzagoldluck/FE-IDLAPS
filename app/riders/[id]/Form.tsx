@@ -23,7 +23,6 @@ export default function Form({ rider }: { rider: Rider }) {
   const [bib, setBIB] = useState(rider.bib);
   const [vci_num, setVciNum] = useState(rider.vci_num);
   const [id_beacon, setidBeacon] = useState(rider.id_beacon);
-  const [mac_no, setMacNo] = useState(rider.mac_no);
   const [note_1, setNote1] = useState(rider.note_1);
   const [eventSelected, setEventSeleceted] = useState(
     rider.categories.events.id
@@ -114,7 +113,6 @@ export default function Form({ rider }: { rider: Rider }) {
         bib,
         vci_num,
         id_beacon,
-        mac_no,
         note_1,
         category_id: categorySelected,
       }),
@@ -238,12 +236,11 @@ export default function Form({ rider }: { rider: Rider }) {
 
             <div className="sm:col-span-3">
               <label htmlFor="rider-vcinum" className="label-text">
-                VCI Num
+                UCI Num
               </label>
               <div className="mt-2">
                 <input
                   type="text"
-                  required={true}
                   name="vcinum"
                   id="rider-vcinum"
                   className="input input-bordered w-full"
@@ -272,22 +269,6 @@ export default function Form({ rider }: { rider: Rider }) {
                       ))}
                   </select>
                 </div>
-              </div>
-            </div>
-            <div className="sm:col-span-3">
-              <label htmlFor="rider-mac-no" className="label-text">
-                No Mac
-              </label>
-              <div className="mt-2">
-                <input
-                  required={true}
-                  type="text"
-                  name="mac_no"
-                  id="rider-mac-no"
-                  className="input input-bordered w-full"
-                  value={mac_no}
-                  onChange={(e) => setMacNo(e.target.value)}
-                />
               </div>
             </div>
 

@@ -2,7 +2,7 @@
 
 import { updateRiderNote } from "@/services/riders";
 import { useRouter } from "next/navigation";
-import { SyntheticEvent, useState } from "react";
+import { SyntheticEvent, useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 
 export default function SelectRiderNote({
@@ -22,9 +22,12 @@ export default function SelectRiderNote({
   // ]);
 
   const [noteInternal, setNote] = useState(note);
+
+  useEffect(() => {
+    setNote(note);
+  }, [note])
   function handleSelect(e: SyntheticEvent) {
     const { value } = e.currentTarget;
-    prompt("Type Password") === "admin" &&
       updateRiderNote(idRider, value)
         .then((res) => {
           if (res.status === "Server Error") {
@@ -43,8 +46,8 @@ export default function SelectRiderNote({
       onChange={handleSelect}
       value={noteInternal}
     >
-      <option value={"RUN"}>RUN</option>
-      <option value={"FINISHER"}>FINISHER</option>
+      <option value={"RUN"}>RUN 🏃‍♂️</option>
+      <option value={"FINISHER"}>FINISHER 🏁</option>
       <option value={"DNF"}>DNF</option>
       <option value={"DNS"}>DNS</option>
       <option value={"DSQ"}>DSQ</option>

@@ -8,12 +8,15 @@ import { toast } from "react-hot-toast";
 export default function SelectCategory({
   onSelect,
   eventSelected,
+  
+  valSelected
 }: {
   onSelect: Function;
   eventSelected: string;
+  valSelected: string;
 }) {
   const [categories, setCategory] = useState<Category[]>([]);
-  const [category, setCategorySelected] = useState("");
+  const [category, setCategorySelected] = useState(valSelected != "" ? valSelected : "");
 
   useEffect(() => {
     if (eventSelected == "" || eventSelected === "choose-event") return;

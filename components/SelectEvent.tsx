@@ -6,7 +6,7 @@ import { Event, EventResponse } from "@/services/events/data-type";
 import React, { SyntheticEvent, useCallback, useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 
-export default function SelectEvent({ onSelect }: { onSelect: Function }) {
+export default function SelectEvent({ onSelect, valSelected }: { onSelect: Function, valSelected : string }) {
   const [events, setEvents] = useState<Event[]>([]);
 
   const getEventList = useCallback(async () => {
@@ -31,7 +31,7 @@ export default function SelectEvent({ onSelect }: { onSelect: Function }) {
     <select
       className="select select-bordered w-full md:w-3/4"
       onChange={handleSelect}
-      defaultValue={"choose-event"}
+      value={valSelected}
     >
       <option value={"choose-event"}>Choose Event</option>
       {events.length > 0 &&

@@ -12,10 +12,12 @@ const tableBody = ({
   added,
 }: {
   eventSelected: string;
-  added: boolean;
+  added: string;
 }) => {
   const [categories, setCategories] = useState<Category[]>([]);
-  const [changed, setChanged] = useState(added);
+  const [changed, setChanged] = useState(false);
+
+
 
   useEffect(() => {
     if (eventSelected === "choose-event" || eventSelected === "") {
@@ -34,7 +36,7 @@ const tableBody = ({
       .catch((err) =>
         toast.error("Failed to fetch categories by event :   " + err)
       );
-  }, [eventSelected, changed]);
+  }, [eventSelected, changed,  added]);
   return (
     <tbody>
       {categories.length > 0 && eventSelected != "choose-event" ? (

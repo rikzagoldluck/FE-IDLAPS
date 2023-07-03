@@ -1,15 +1,18 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import TableBody from "./TableBody";
+import React, { useContext, useEffect, useState } from "react";
 import SelectEvent from "@/components/SelectEvent";
 import { toast } from "react-hot-toast";
+import TableBody from "./tableBody";
+import { SelectBoxContext } from "../provider/SelectBox";
 
 export default function index() {
-  const [eventSelected, setEventSeleceted] = useState("");
+  const selectBox = useContext(SelectBoxContext)
+  const [eventSelected, setEventSeleceted] = useState(selectBox.selectedEvent != "" ? selectBox.selectedEvent : "");
   const [buttonState, setButtonState] = useState("");
 
   const handleSelect = (id: string) => {
-    setEventSeleceted(id);
+    selectBox.setSelectedEvent(id);
+    setEventSeleceted(id);  
   };
 
   const handleClick = (button: string) => {
@@ -19,7 +22,7 @@ export default function index() {
   return (
     <div className="py-10 px-10">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-4 text-center justify-between mb-6">
-        <SelectEvent onSelect={handleSelect} />
+        <SelectEvent onSelect={handleSelect} valSelected={eventSelected} />
         <div className="flex gap-5 mx-auto" id="clock">
           <div>
             <span className="countdown font-mono text-4xl">
@@ -73,7 +76,7 @@ export default function index() {
       </div>
 
       <div className="overflow-x-auto">
-        <table className="table table-zebra w-full font-bold">
+        <table className="table table-zebra w-full font-bold text-center">
           <thead>
             <tr>
               <th>No</th>
@@ -83,7 +86,7 @@ export default function index() {
               <th>Start Time</th>
               <th>End Time</th>
               <th>Sex</th>
-              <th>Distance</th>
+              <th>Distance(KM)</th>
               <th>Lap(s)</th>
               <th>Run</th>
               <th>#</th>
