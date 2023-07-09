@@ -8,41 +8,41 @@ import { toast } from "react-hot-toast";
 import DeleteRider from "./deleteRiders";
 
 export default function TableBody({
-  changed,
   categorySelected,
+  added,
   onDeleted,
 }: {
-  changed: boolean;
-  categorySelected: string;
   onDeleted: Function;
+  categorySelected: string;
+  added: string;
 }) {
   const [riders, setRiders] = useState<Rider[]>([]);
-  const [tableChanged, setTableChanged] = useState(changed);
+  const [changed, setChanged] = useState(false);
   const [selected, setSelected] = useState(categorySelected);
 
   useEffect(() => {
-   setSelected(categorySelected);
-   if(categorySelected == "" || categorySelected == 'choose-category')return;
-   getRidersByCategory(categorySelected)
-   .then((res) => {
-     if (res.status === "Server Error") {
-       toast.error(res.message);
-       return;
-     }
-     setRiders(res.data);
-   })
-   .catch((err) =>
-     toast.error("Failed to fetch riders by category :   " + err)
-   );
-  }, [])
+    setSelected(categorySelected);
+    if (categorySelected == "" || categorySelected == "choose-category") return;
+    getRidersByCategory(categorySelected)
+      .then((res) => {
+        if (res.status === "Server Error") {
+          toast.error(res.message);
+          return;
+        }
+        setRiders(res.data);
+      })
+      .catch((err) =>
+        toast.error("Failed to fetch riders by category :   " + err)
+      );
+  }, []);
 
   useEffect(() => {
     onDeleted();
-  }, [tableChanged]);
+  }, [changed]);
 
   useEffect(() => {
     setSelected(categorySelected);
-  }, [categorySelected])
+  }, [categorySelected]);
 
   useEffect(() => {
     if (selected === "choose-category" || selected === "") {
@@ -59,13 +59,13 @@ export default function TableBody({
           return;
         }
         setRiders(res.data);
+        console.log(res.data);
       })
       .catch((err) =>
         toast.error("Failed to fetch riders by category :   " + err)
       );
-  }, [selected, tableChanged]);
+  }, [selected, changed, added]);
 
-  
   return (
     <tbody>
       {riders.length > 0 && categorySelected != "choose-category" ? (
@@ -74,8 +74,12 @@ export default function TableBody({
             <td>{index + 1}</td>
             <td>{rider.name}</td>
             <td>{rider.age}</td>
-            <td>{rider.nationality}</td>
-            <td>{rider.teams.name}</td>
+            <td>{rider.nationality == "" ? "-" : rider.nationality}</td>
+            <td>
+              {rider.team_name == "" || rider.team_name == "null"
+                ? "Not Set"
+                : rider.team_name}
+            </td>
             <td>{rider.bib}</td>
             <td>
               {" "}
@@ -86,7 +90,7 @@ export default function TableBody({
                 readOnly
               />
             </td>
-            <td>{rider.note_1}</td>
+            <td>{rider.note_1 == "" ? "-" : rider.note_1}</td>
             <td className="flex gap-3">
               {/* <UpdateRider {...rider} /> */}
               <Link href={`/riders/${rider.id}`}>
@@ -94,7 +98,7 @@ export default function TableBody({
               </Link>
               <DeleteRider
                 rider={rider}
-                onDeleted={() => setTableChanged(!tableChanged)}
+                onDeleted={() => setChanged(!changed)}
               />
             </td>
           </tr>

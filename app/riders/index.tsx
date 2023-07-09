@@ -10,15 +10,18 @@ import { BeaconResponse } from "@/services/beacons/data-type";
 import { SelectBoxContext } from "../provider/SelectBox";
 
 export default function index() {
-  const selectBox = useContext(SelectBoxContext)
-  const [eventSelected, setEventSeleceted] = useState(selectBox.selectedEvent != "" ? selectBox.selectedEvent : "");
-  const [categorySelected, setCategorySeleceted] = useState(selectBox.selectedCategory != "" ? selectBox.selectedCategory : "");
-  const [added, setAdded] = useState(false);
+  const selectBox = useContext(SelectBoxContext);
+  const [eventSelected, setEventSeleceted] = useState(
+    selectBox.selectedEvent != "" ? selectBox.selectedEvent : ""
+  );
+  const [categorySelected, setCategorySeleceted] = useState(
+    selectBox.selectedCategory != "" ? selectBox.selectedCategory : ""
+  );
+  const [added, setAdded] = useState("");
   const [beacons, setBeacons] = useState<BeaconResponse>({
     message: "",
     data: [],
   });
-  
 
   const [changed, setChanged] = useState(false);
 
@@ -31,13 +34,14 @@ export default function index() {
     selectBox.setSelectedCategory(id);
   };
 
-  useEffect(() => {setEventSeleceted(selectBox.selectedEvent.toString())
-    setCategorySeleceted(selectBox.selectedCategory.toString())}, [])
- 
+  useEffect(() => {
+    setEventSeleceted(selectBox.selectedEvent.toString());
+    setCategorySeleceted(selectBox.selectedCategory.toString());
+  }, []);
 
   useEffect(() => {
-    
-    if (categorySelected === "" || categorySelected === "choose-category") return;
+    if (categorySelected === "" || categorySelected === "choose-category")
+      return;
     getAvailBeaconsInEvents(categorySelected)
       .then((res) => {
         setBeacons(res);
@@ -52,7 +56,7 @@ export default function index() {
         }
         toast.error(res.message, { duration: 3000 });
       });
-  }, [categorySelected, changed]);
+  }, [categorySelected, added, changed]);
 
   return (
     <div className="py-10 px-10">
@@ -61,7 +65,6 @@ export default function index() {
         <SelectCategory
           onSelect={handleSelectCategory}
           eventSelected={eventSelected}
-
           valSelected={categorySelected}
         />
 
@@ -69,7 +72,7 @@ export default function index() {
           categorySelected={categorySelected}
           eventSelected={eventSelected}
           onAdded={() => {
-            setChanged(!changed);
+            setAdded("add-" + Date.now());
           }}
           beacons={beacons}
         />
@@ -92,10 +95,8 @@ export default function index() {
           </thead>
           <TableBody
             categorySelected={categorySelected}
-            changed={changed}
-            onDeleted={() => {
-              setChanged(!changed);
-            }}
+            added={added}
+            onDeleted={() => setChanged(!changed)}
           />
         </table>
       </div>

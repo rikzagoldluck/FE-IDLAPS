@@ -28,7 +28,7 @@ export default async function EventList() {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="table table-zebra w-full font-bold">
+          <table className="table table-zebra w-full font-bold text-center">
             <thead>
               <tr>
                 <th>#</th>
@@ -53,15 +53,17 @@ export default async function EventList() {
                     <td>{index + 1}</td>
                     <td>{event.name}</td>
                     <td>{event.location}</td>
-                    <td>{event.desc_1}</td>
-                    <td>{event.desc_2}</td>
+                    <td>{event.desc_1 == "" ? "-" : event.desc_1}</td>
+                    <td>{event.desc_2 == "" ? "-" : event.desc_2}</td>
                     <td>{convertDateTimeMillis(event.start_datetime)}</td>
                     <td>{convertDateTimeMillis(event.end_datetime)}</td>
                     <td>{event.distance}</td>
-                    <td>{event.type}</td>
+                    <td>{event.type == "" ? "-" : event.type}</td>
                     <td>{event.registration_fee}</td>
-                    <td>{event.commisioner}</td>
-                    <td>{event.race_director}</td>
+                    <td>{event.commisioner == "" ? "-" : event.commisioner}</td>
+                    <td>
+                      {event.race_director == "" ? "-" : event.race_director}
+                    </td>
                     <td className="flex gap-3">
                       {/* <UpdateEvent {...event} /> */}
                       <Link href={`/events/${event.id}`}>

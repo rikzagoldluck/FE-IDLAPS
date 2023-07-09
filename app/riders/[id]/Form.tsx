@@ -36,10 +36,7 @@ export default function Form({ rider }: { rider: Rider }) {
     data: [],
   });
   const [categories, setCategories] = useState<Category[]>([]);
-  const [teams, setTeams] = useState<TeamResponse>({
-    message: "",
-    data: [],
-  });
+  const [team_name, setTeams] = useState(rider.team_name);
 
   const [beacons, setBeacons] = useState<BeaconResponse>({
     message: "",
@@ -50,10 +47,8 @@ export default function Form({ rider }: { rider: Rider }) {
 
   const getEventAndTeamList = useCallback(async () => {
     const eventsData = await getEventsWithCaching();
-    const teamsData = await getTeamsWithCaching();
     setEvents(eventsData);
-    setTeams(teamsData);
-  }, [getEventsWithCaching, getTeamsWithCaching]);
+  }, [getEventsWithCaching]);
 
   useEffect(() => {
     getEventAndTeamList();
@@ -109,7 +104,7 @@ export default function Form({ rider }: { rider: Rider }) {
         name,
         age,
         nationality,
-        team_id: teamSelected,
+        team_name,
         bib,
         vci_num,
         id_beacon,
@@ -166,7 +161,7 @@ export default function Form({ rider }: { rider: Rider }) {
 
             <div className="sm:col-span-3">
               <label htmlFor="rider-note-2" className="label-text">
-                Note 2
+                Description
               </label>
               <div className="mt-2">
                 <textarea
@@ -205,7 +200,6 @@ export default function Form({ rider }: { rider: Rider }) {
               <div className="mt-2">
                 <input
                   type="text"
-                  required={true}
                   name="nationality"
                   id="rider-nationality"
                   className="w-full input input-bordered"
@@ -264,7 +258,7 @@ export default function Form({ rider }: { rider: Rider }) {
                     {beacons.data.length > 0 &&
                       beacons.data.map((beacon) => (
                         <option key={beacon.id} value={beacon.id}>
-                          {beacon.id}
+                          {beacon.id} - {beacon.tag_id}
                         </option>
                       ))}
                   </select>
@@ -277,21 +271,15 @@ export default function Form({ rider }: { rider: Rider }) {
                 Team
               </label>
               <div className="mt-2">
-                <div className="input-group">
-                  <select
-                    required={true}
-                    className="select select-bordered w-full"
-                    onChange={(e) => setTeamSeleceted(parseInt(e.target.value))}
-                    value={teamSelected}
-                  >
-                    {teams.data.length > 0 &&
-                      teams.data.map((team) => (
-                        <option key={team.id} value={team.id}>
-                          {`${team.name} - ${team.nationality}`}
-                        </option>
-                      ))}
-                  </select>
-                </div>
+                <input
+                  required={true}
+                  type="text"
+                  name="tea"
+                  id="event-team"
+                  className="input input-bordered w-full"
+                  value={team_name}
+                  onChange={(e) => setTeams(e.target.value)}
+                />
               </div>
             </div>
             <div className="sm:col-span-3">

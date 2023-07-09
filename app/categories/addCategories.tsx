@@ -17,7 +17,7 @@ export default function AddCategory({
   const [description, setDescription] = useState("");
   const [start_time, setStartTime] = useState("");
   const [end_time, setEndTime] = useState("");
-  const [sex, setSex] = useState("Men");
+  const [sex, setSex] = useState("Man");
   const [distance, setDistance] = useState(0);
   const [lap, setLap] = useState(0);
   const [run, setRun] = useState(false);
@@ -129,14 +129,12 @@ export default function AddCategory({
                   </div>
                 </div>
                 <div className="sm:col-span-3">
-                  <label className="label-text">
-                    Sex
-                  </label>
+                  <label className="label-text">Sex</label>
                   {/* <div className="mt-2"> */}
                   <label className="label cursor-pointer " htmlFor="man">
-                    <span className="label-text"  >Man</span>
+                    <span className="label-text">Man</span>
                     <input
-                    id="man"
+                      id="man"
                       required={true}
                       type="radio"
                       name="radio-10"
@@ -148,7 +146,7 @@ export default function AddCategory({
                   <label className="label cursor-pointer" htmlFor="woman">
                     <span className="label-text">Woman</span>
                     <input
-                    id="woman"
+                      id="woman"
                       type="radio"
                       name="radio-10"
                       className="radio checked:bg-blue"
@@ -159,7 +157,7 @@ export default function AddCategory({
                   <label className="label cursor-pointer" htmlFor="mix">
                     <span className="label-text">Mix</span>
                     <input
-                    id="mix"
+                      id="mix"
                       type="radio"
                       name="radio-10"
                       className="radio checked:bg-blue"
@@ -228,7 +226,7 @@ export default function AddCategory({
                   </label>
                   <div className="mt-2">
                     <input
-                      required={true}
+                      // required={true}
                       type="datetime-local"
                       name="end"
                       id="event-end-date"

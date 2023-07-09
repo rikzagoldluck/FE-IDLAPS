@@ -27,29 +27,12 @@ export default function AddRider({
   const [vci_num, setVciNum] = useState("");
   const [note_1, setNote1] = useState("");
 
-  const [teams, setTeams] = useState<TeamResponse>({
-    message: "",
-    data: [],
-  });
+  const [team_name, setTeams] = useState("");
 
   const [modal, setModal] = useState(false);
   const [isMutating, setIsMutating] = useState(false);
-  const [teamSelected, setTeamSeleceted] = useState("");
   const [beaconSelected, setBeaconSeleceted] = useState("");
   const [disable, setDisable] = useState(true);
-
-  const getTeamsAndBeaconList = useCallback(async () => {
-    try {
-      const teamsData = await getTeamsWithCaching();
-      setTeams(teamsData);
-    } catch (error: any) {
-      toast.error(error.message, { duration: 3000 });
-    }
-  }, [getTeamsWithCaching]);
-
-  useEffect(() => {
-    getTeamsAndBeaconList();
-  }, []);
 
   useEffect(() => {
     if (
@@ -79,7 +62,7 @@ export default function AddRider({
         name,
         age,
         nationality,
-        team_id: teamSelected,
+        team_name,
         bib,
         vci_num,
         id_beacon: beaconSelected,
@@ -94,7 +77,6 @@ export default function AddRider({
       toast.error("Something went wrong" + resBody.message, { duration: 1000 });
       return;
     }
-    onAdded();
 
     toast.success("Rider added", { duration: 1000 });
     setIsMutating(false);
@@ -102,11 +84,11 @@ export default function AddRider({
     setName("");
     setAge(0);
     setNationality("");
-    setTeamSeleceted("");
+    setTeams("");
     setBIB("");
     setVciNum("");
     setNote1("");
-
+    onAdded();
     setModal(false);
   }
 
@@ -163,7 +145,7 @@ export default function AddRider({
 
                 <div className="sm:col-span-3">
                   <label htmlFor="rider-note-2" className="label-text">
-                    Note 2
+                    Description
                   </label>
                   <div className="mt-2">
                     <textarea
@@ -182,11 +164,10 @@ export default function AddRider({
                   </label>
                   <div className="mt-2">
                     <input
-                      required={true}
                       type="number"
                       name="age"
                       id="rider-age"
-                      min={1}
+                      min={0}
                       max={200}
                       className="input input-bordered w-full"
                       value={age}
@@ -202,7 +183,6 @@ export default function AddRider({
                   <div className="mt-2">
                     <input
                       type="text"
-                      required={true}
                       name="nationality"
                       id="rider-nationality"
                       className="w-full input input-bordered"
@@ -262,7 +242,7 @@ export default function AddRider({
                         {beacons.data.length > 0 &&
                           beacons.data.map((beacon) => (
                             <option key={beacon.id} value={beacon.id}>
-                              {beacon.id}
+                              {beacon.id} - {beacon.tag_id}
                             </option>
                           ))}
                       </select>
@@ -275,22 +255,15 @@ export default function AddRider({
                     Team
                   </label>
                   <div className="mt-2">
-                    <div className="input-group">
-                      <select
-                        required={true}
-                        className="select select-bordered w-full"
-                        onChange={(e) => setTeamSeleceted(e.target.value)}
-                        defaultValue={"pickone"}
-                      >
-                        <option value={"pickone"}>Pick one</option>
-                        {teams.data.length > 0 &&
-                          teams.data.map((team) => (
-                            <option key={team.id} value={team.id}>
-                              {`${team.name} - ${team.nationality}`}
-                            </option>
-                          ))}
-                      </select>
-                    </div>
+                    <input
+                      required={true}
+                      type="text"
+                      name="tea"
+                      id="event-team"
+                      className="input input-bordered w-full"
+                      value={team_name}
+                      onChange={(e) => setTeams(e.target.value)}
+                    />
                   </div>
                 </div>
               </div>

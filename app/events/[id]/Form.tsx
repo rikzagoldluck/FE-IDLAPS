@@ -251,7 +251,7 @@ export default function Form({ event }: { event: Event }) {
                     name="regis-fee"
                     id="event-registration-fee"
                     className="input input-bordered w-full"
-                    min={1}
+                    min={0}
                     max={10000}
                     value={registration_fee}
                     onChange={(e) => setRegisFee(Number(e.target.value))}

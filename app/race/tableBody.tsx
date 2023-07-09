@@ -107,13 +107,9 @@ const TableBody = ({
           <tr key={category.id}>
             <td>{index + 1}</td>
             <td>
-              {category.run ? (
-                <Link href={`/race/${category.id}`} className="link link-hover">
-                  <p>{category.name}</p>
-                </Link>
-              ) : (
+              <Link href={`/race/${category.id}`} className="link link-hover">
                 <p>{category.name}</p>
-              )}
+              </Link>
             </td>
             <td>{convertDateTimeMillis(category.start_sch)}</td>
             <td>{convertDateTimeMillis(category.end_sch)}</td>
@@ -127,7 +123,14 @@ const TableBody = ({
                 ? "-"
                 : convertDateTimeMillis(category.end_time)}
             </td>
-            <td><Image src={"/img/"+category.sex + ".png"} alt={category.sex} width={48} height={48} /></td>
+            <td>
+              <Image
+                src={"/img/" + category.sex + ".png"}
+                alt={category.sex}
+                width={48}
+                height={48}
+              />
+            </td>
             <td>{category.distance}</td>
             <td>{category.lap}</td>
             <td>
