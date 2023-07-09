@@ -7,8 +7,7 @@ export type Rider = {
   name: string;
   age: number;
   nationality: string;
-  team_id: number;
-  teams: Team;
+  team_name: string;
   bib: string;
   total_waktu: string;
   vci_num: string;

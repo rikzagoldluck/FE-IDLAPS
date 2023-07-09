@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import "./globals.css";
+import SelectBox from "./provider/SelectBox";
 
 export const metadata = {
   title: "IDLaps",
@@ -13,7 +14,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <SelectBox>
+        {children}
+        </SelectBox>
+        </body>
     </html>
   );
 }

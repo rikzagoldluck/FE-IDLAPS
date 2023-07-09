@@ -1,15 +1,11 @@
-"use client";
-
 import Navbar from "@/components/Navbar";
-import SelectRiderNote from "@/components/SelectRiderNote";
-import { convertDateTimeMillis, timeDifference } from "@/services/converter";
-import { getRidersRunInCategory } from "@/services/riders";
-import { Rider } from "@/services/riders/data-type";
+import React from "react";
 import { Toaster } from "react-hot-toast";
-import useSWR from "swr";
+import TableBody from "./TableBody";
 
-export default function Page({ params }: { params: { id: number } }) {
+export default function page({ params }: { params: { id: number } }) {
   const { id } = params;
+<<<<<<< HEAD
   //   const router = useRouter();
   const { data, error, isLoading } = useSWR("getRidersRunInCategory", () =>
     getRidersRunInCategory(id)
@@ -87,6 +83,8 @@ export default function Page({ params }: { params: { id: number } }) {
 
   
 
+=======
+>>>>>>> 61d69e16d17bde94ffb686b4f8f8bc06713865ae
   return (
     <>
       <Navbar title={"Category Championship"} />
@@ -94,93 +92,9 @@ export default function Page({ params }: { params: { id: number } }) {
         <Toaster />
       </div>
       <div className="py-10 px-10">
+        {/* <h1 className="text-center text-4xl mb-5">{categoryName}</h1> */}
         <div className="overflow-x-auto">
-          <table className="table table-zebra w-full text-center">
-            <thead>
-              <tr>
-                <th>POS</th>
-                <th>Rider</th>
-                <th>Team</th>
-                <th>BIB</th>
-                <th>START</th>
-                <th>TOTAL TIME</th>
-                <th>GAP</th>
-                {Array.from({ length: lap }).map((_, index) => (
-                  <th key={index}>Lap {index + 1}</th>
-                ))}
-                <th>Note</th>
-              </tr>
-            </thead>
-            <tbody className="font-bold">
-              {riders.map((pembalap: Rider, index: number) => (
-                <tr key={index}>
-                  <td>{index + 1}</td>
-                  <td>{pembalap.name}</td>
-                  <td>{pembalap.teams.name}</td>
-                  <td>{pembalap.bib}</td>
-                  <td>{convertDateTimeMillis(start_time)}</td>
-                  {pembalap.total_waktu === "0" && <td>00:00:00.000</td>}
-                  {pembalap.total_waktu !== "0" && (
-                    <td>
-                      {timeDifference(
-                        start_time,
-                        Number(pembalap.total_waktu)
-                      ) === "NaN:NaN:NaN"
-                        ? "00:00:00"
-                        : timeDifference(
-                            start_time,
-                            Number(pembalap.total_waktu)
-                          )}
-                    </td>
-                  )}
-
-                  {pembalap.total_waktu === "0" && index == 0 && <td>-</td>}
-                  {pembalap.total_waktu === "0" && index != 0 && (
-                    <td>+00:00:00.000</td>
-                  )}
-                  {pembalap.total_waktu !== "0" && (
-                    <td>
-                      {timeDifference(
-                        start_time,
-                        Number(pembalap.total_waktu)
-                      ) === "NaN:NaN:NaN"
-                        ? "00:00:00.000"
-                        : index != 0
-                        ? "+" +
-                          timeDifference(
-                            Number(riders[index - 1].total_waktu),
-                            Number(pembalap.total_waktu)
-                          )
-                        : "-"}
-                    </td>
-                  )}
-
-                  {pembalap.race_results.map((lap, lapIndex) => {
-                    return (
-                      <td key={lapIndex}>
-                        {timeDifference(start_time, Number(lap.finish_time)) ===
-                        "NaN:NaN:NaN"
-                          ? "00:00:00.000"
-                          : timeDifference(start_time, Number(lap.finish_time))}
-                      </td>
-                    );
-                  })}
-
-                  {Array.from({
-                    length: lap - pembalap.race_results.length,
-                  }).map((_, index) => (
-                    <td key={index}>00:00:00.000</td>
-                  ))}
-                  <td>
-                    <SelectRiderNote
-                      idRider={pembalap.id}
-                      note={pembalap.note}
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <TableBody id={id} />
         </div>
       </div>
     </>

@@ -2,8 +2,6 @@
 
 import { SyntheticEvent, useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Event, EventResponse } from "@/services/events/data-type";
-import { getEvents, getEventsWithCaching } from "@/services/events";
 import toast from "react-hot-toast";
 import { dateTimeToUnix, unixToDDMMYYYY } from "@/services/converter";
 export default function AddCategory({
@@ -19,7 +17,7 @@ export default function AddCategory({
   const [description, setDescription] = useState("");
   const [start_time, setStartTime] = useState("");
   const [end_time, setEndTime] = useState("");
-  const [sex, setSex] = useState("Men");
+  const [sex, setSex] = useState("Man");
   const [distance, setDistance] = useState(0);
   const [lap, setLap] = useState(0);
   const [run, setRun] = useState(false);
@@ -71,8 +69,8 @@ export default function AddCategory({
     setLap(0);
     setRun(false);
 
-    // router.refresh();
     onAdded();
+    // router.push('/categories');
     setModal(false);
   }
 
@@ -131,13 +129,12 @@ export default function AddCategory({
                   </div>
                 </div>
                 <div className="sm:col-span-3">
-                  <label htmlFor="category-sex" className="label-text">
-                    Sex
-                  </label>
+                  <label className="label-text">Sex</label>
                   {/* <div className="mt-2"> */}
-                  <label className="label cursor-pointer ">
+                  <label className="label cursor-pointer " htmlFor="man">
                     <span className="label-text">Man</span>
                     <input
+                      id="man"
                       required={true}
                       type="radio"
                       name="radio-10"
@@ -146,9 +143,10 @@ export default function AddCategory({
                       onChange={() => handleRadioButton("Man")}
                     />
                   </label>
-                  <label className="label cursor-pointer">
+                  <label className="label cursor-pointer" htmlFor="woman">
                     <span className="label-text">Woman</span>
                     <input
+                      id="woman"
                       type="radio"
                       name="radio-10"
                       className="radio checked:bg-blue"
@@ -156,9 +154,10 @@ export default function AddCategory({
                       onChange={() => handleRadioButton("Woman")}
                     />
                   </label>
-                  <label className="label cursor-pointer">
+                  <label className="label cursor-pointer" htmlFor="mix">
                     <span className="label-text">Mix</span>
                     <input
+                      id="mix"
                       type="radio"
                       name="radio-10"
                       className="radio checked:bg-blue"
@@ -197,7 +196,6 @@ export default function AddCategory({
                         className="input input-bordered w-full"
                         value={distance}
                         min={1}
-                        defaultValue={0}
                         max={10000}
                         onChange={(e) => setDistance(Number(e.target.value))}
                       />
@@ -228,7 +226,7 @@ export default function AddCategory({
                   </label>
                   <div className="mt-2">
                     <input
-                      required={true}
+                      // required={true}
                       type="datetime-local"
                       name="end"
                       id="event-end-date"
@@ -253,7 +251,6 @@ export default function AddCategory({
                       onChange={(e) => setLap(Number(e.target.value))}
                       min={1}
                       max={100}
-                      defaultValue={0}
                     />
                   </div>
                 </div>

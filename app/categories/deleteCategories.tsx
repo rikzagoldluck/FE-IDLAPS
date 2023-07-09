@@ -43,7 +43,7 @@ export default function DeleteCategory({
   }
 
   return (
-    <div>
+    <>
       <button className="btn btn-error btn-sm" onClick={handleChange}>
         Delete
       </button>
@@ -80,6 +80,6 @@ export default function DeleteCategory({
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

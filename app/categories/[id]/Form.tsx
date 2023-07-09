@@ -12,7 +12,9 @@ export default function Form({ category }: { category: Category }) {
   const [name, setName] = useState(category.name);
   const [description, setDescription] = useState(category.description);
   const [start_time, setStartTime] = useState(unixToInput(category.start_sch));
-  const [end_time, setEndTime] = useState(unixToInput(category.end_sch));
+  const [end_time, setEndTime] = useState(
+    category.end_sch === "NaN" ? 0 : unixToInput(category.end_sch)
+  );
   const [sex, setSex] = useState(category.sex);
   const [distance, setDistance] = useState(category.distance);
   const [lap, setLap] = useState(category.lap);
@@ -213,7 +215,6 @@ export default function Form({ category }: { category: Category }) {
               </label>
               <div className="mt-2">
                 <input
-                  required={true}
                   type="datetime-local"
                   name="end"
                   id="cateogry-end-date"

@@ -6,16 +6,17 @@ import React, { SyntheticEvent, useCallback, useEffect, useState } from "react";
 import DeleteCategory from "./deleteCategories";
 import { getCategories, getCategoriesByEvent } from "@/services/categories";
 import toast from "react-hot-toast";
+import Image from "next/image";
 
 const tableBody = ({
   eventSelected,
   added,
 }: {
   eventSelected: string;
-  added: boolean;
+  added: string;
 }) => {
   const [categories, setCategories] = useState<Category[]>([]);
-  const [changed, setChanged] = useState(added);
+  const [changed, setChanged] = useState(false);
 
   useEffect(() => {
     if (eventSelected === "choose-event" || eventSelected === "") {
@@ -34,7 +35,7 @@ const tableBody = ({
       .catch((err) =>
         toast.error("Failed to fetch categories by event :   " + err)
       );
-  }, [eventSelected, changed]);
+  }, [eventSelected, changed, added]);
   return (
     <tbody>
       {categories.length > 0 && eventSelected != "choose-event" ? (
@@ -42,10 +43,22 @@ const tableBody = ({
           <tr key={category.id}>
             <td>{index + 1}</td>
             <td>{category.name}</td>
-            <td>{category.description}</td>
+            <td>{category.description == "" ? "-" : category.description}</td>
             <td>{convertDateTimeMillis(category.start_sch)}</td>
-            <td>{convertDateTimeMillis(category.end_sch)}</td>
-            <td>{category.sex}</td>
+            <td>
+              {convertDateTimeMillis(category.end_sch) === "Invalid date" ||
+              convertDateTimeMillis(category.end_sch) === "01/01/1970 07:00:00"
+                ? "Not Set"
+                : convertDateTimeMillis(category.end_sch)}
+            </td>
+            <td>
+              <Image
+                src={"/img/" + category.sex + ".png"}
+                alt={category.sex}
+                width={48}
+                height={48}
+              />
+            </td>
             <td>{category.distance}</td>
             <td>{category.lap}</td>
             <td className="flex gap-3">
