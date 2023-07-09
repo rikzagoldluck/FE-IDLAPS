@@ -25,34 +25,26 @@ export default function Page({ id }: { id: number }) {
     return <></>;
   }
   if (!data) return <></>;
-  console.log();
 
   if (data.length === 0) {
     return (
-      <>
-        <Navbar title={"Category Championship"} />
-        <div className="py-10 px-10">
-          <div className="overflow-x-auto">
-            <table className="table table-zebra w-full font-bold text-center">
-              <thead>
-                <tr>
-                  <th>POS</th>
-                  <th>Rider</th>
-                  <th>Team</th>
-                  <th>BIB</th>
-                  <th>TIME</th>
-                  <th>GAP</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td colSpan={6}>No Data</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </>
+      <table className="table table-zebra w-full font-bold text-center">
+        <thead>
+          <tr>
+            <th>POS</th>
+            <th>Rider</th>
+            <th>Team</th>
+            <th>BIB</th>
+            <th>TIME</th>
+            <th>GAP</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td colSpan={6}>No Data</td>
+          </tr>
+        </tbody>
+      </table>
     );
   }
   const riders: Rider[] = data;
@@ -60,7 +52,7 @@ export default function Page({ id }: { id: number }) {
   const start_time = riders[0].categories.start_time;
   const categoryName = riders[0].categories.name;
 
-  if (riders[0].race_results.length != 0) {
+  if (riders[0].race_results.length > 1) {
     riders.sort((a, b) => {
       // Urutan berdasarkan jumlah lap terbanyak (descending)
       if (a.race_results.length !== b.race_results.length) {
@@ -113,7 +105,7 @@ export default function Page({ id }: { id: number }) {
           <tr key={index}>
             <td>{index + 1}</td>
             <td>{pembalap.name}</td>
-            <td>{pembalap.teams.name}</td>
+            <td>{pembalap.team_name}</td>
             <td>{pembalap.bib}</td>
             <td>{convertDateTimeMillis(start_time)}</td>
             {pembalap.total_waktu === "0" && <td>00:00:00.000</td>}
