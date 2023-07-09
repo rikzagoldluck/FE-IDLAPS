@@ -54,34 +54,38 @@ export default function Page({ params }: { params: { id: number } }) {
   const lap = riders[0].categories.lap;
   const start_time = riders[0].categories.start_time;
 
-  riders.sort((a, b) => {
-    // Urutan berdasarkan jumlah lap terbanyak (descending)
-    if (a.race_results.length !== b.race_results.length) {
-      return b.race_results.length - a.race_results.length;
-    }
+  if(riders[0].race_results.length != 0){
+    riders.sort((a, b) => {
+      // Urutan berdasarkan jumlah lap terbanyak (descending)
+      if (a.race_results.length !== b.race_results.length) {
+        return b.race_results.length - a.race_results.length;
+      }
+  
+      // Jika jumlah lap sama, urutan berdasarkan waktu tercepat (ascending)
+      if (
+        a.race_results[a.race_results.length - 1].finish_time !==
+        b.race_results[b.race_results.length - 1].finish_time
+      ) {
+        return (
+          Number(a.race_results[a.race_results.length - 1].finish_time) -
+          Number(b.race_results[b.race_results.length - 1].finish_time)
+        );
+      }
+    });
+  
+    riders.sort((a, b) => {
+      const keteranganOrder = {
+        FINISHER: 1,
+        RUN: 2,
+        DNF: 3,
+        DSQ: 4,
+        DNS: 5,
+      };
+      return keteranganOrder[a.note] - keteranganOrder[b.note];
+    });
+  }
 
-    // Jika jumlah lap sama, urutan berdasarkan waktu tercepat (ascending)
-    if (
-      a.race_results[a.race_results.length - 1].finish_time !==
-      b.race_results[b.race_results.length - 1].finish_time
-    ) {
-      return (
-        Number(a.race_results[a.race_results.length - 1].finish_time) -
-        Number(b.race_results[b.race_results.length - 1].finish_time)
-      );
-    }
-  });
-
-  riders.sort((a, b) => {
-    const keteranganOrder = {
-      FINISHER: 1,
-      RUN: 2,
-      DNF: 3,
-      DSQ: 4,
-      DNS: 5,
-    };
-    return keteranganOrder[a.note] - keteranganOrder[b.note];
-  });
+  
 
   return (
     <>
