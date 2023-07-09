@@ -84,3 +84,14 @@ export const unixToDDMMYYYY = (unix: string) => {
   // Format the date as DD/MMM/YYYY
   return momentDate.format("DD/MMM/YYYY");
 };
+
+export const unixToHHMM = (unix: string) => {
+  var momentDate = moment.unix(parseInt(unix) / 1000);
+
+  // Set the desired time zone ("Asia/Jakarta" in this case)
+  var timeZone = "Asia/Jakarta";
+  moment.tz(timeZone);
+
+  // Format the date as DD/MMM/YYYY
+  return momentDate.format("HH:mm");
+};

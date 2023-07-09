@@ -21,24 +21,24 @@ export default function SelectRiderNote({
   // { id: 7, note: "LAP" },
   // ]);
 
-  const [noteInternal, setNote] = useState(note);
+  const [noteInternal, setNote] = useState(note ? note : "RUN");
 
   useEffect(() => {
     setNote(note);
-  }, [note])
+  }, [note]);
   function handleSelect(e: SyntheticEvent) {
     const { value } = e.currentTarget;
-      updateRiderNote(idRider, value)
-        .then((res) => {
-          if (res.status === "Server Error") {
-            toast.error(res.message);
+    updateRiderNote(idRider, value)
+      .then((res) => {
+        if (res.status === "Server Error") {
+          toast.error(res.message);
 
-            return;
-          }
-          toast.success("Rider note updated");
-          setNote(value);
-        })
-        .catch((err) => toast.error("Failed to update rider note : " + err));
+          return;
+        }
+        toast.success("Rider note updated");
+        setNote(value);
+      })
+      .catch((err) => toast.error("Failed to update rider note : " + err));
   }
   return (
     <select

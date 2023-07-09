@@ -1,87 +1,137 @@
 "use client";
 
-import { SelectBoxContext } from "@/app/provider/SelectBox";
-import Navbar from "@/components/Navbar";
 import SelectRiderNote from "@/components/SelectRiderNote";
 import { convertDateTimeMillis, timeDifference } from "@/services/converter";
-import { getRidersRunInCategory } from "@/services/riders";
+import {
+  getRidersRunInCategory,
+  updateRidersNoteInParcel,
+} from "@/services/riders";
 import { Rider } from "@/services/riders/data-type";
-import { useContext } from "react";
-import { Toaster } from "react-hot-toast";
-import useSWR from "swr";
+import { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 
-export default function Page({ id }: { id: number }) {
-  const selectBox = useContext(SelectBoxContext);
+export default function TableBody({
+  id,
+  onCategoryNameChange,
+  note,
+}: {
+  id: number;
+  onCategoryNameChange: (name: string) => void;
+  note: string;
+}) {
+  const [riders, setRiders] = useState<Rider[]>([]);
+  const [lap, setLap] = useState<number>(1);
+  const [start_time, setStart_time] = useState<any>("0");
+  const [checkboxes, setCheckboxes] = useState<{ [key: string]: boolean }>({});
 
-  //   const router = useRouter();
-  const { data, error, isLoading } = useSWR("getRidersRunInCategory", () =>
+  const handleCheckboxChange = (checkboxName: string) => {
+    setCheckboxes((prevCheckboxes) => ({
+      ...prevCheckboxes,
+      [checkboxName]: !prevCheckboxes[checkboxName],
+    }));
+  };
+
+  useEffect(() => {
     getRidersRunInCategory(id)
-  );
+      .then((res) => {
+        if (res.status === "Server Error") {
+          toast.error(res.message);
+          return;
+        }
+        setRiders(res.data);
+        setStart_time(res.data[0].categories.start_time);
+        setLap(res.data[0].categories.lap);
+        onCategoryNameChange(res.data[0].categories.name);
+      })
+      .catch((err) => {
+        toast.error(err.message);
+      });
+  }, [id]);
 
-  if (isLoading) {
-    return <></>;
-  }
-  if (error) {
-    return <></>;
-  }
-  if (!data) return <></>;
+  useEffect(() => {
+    if (riders.length === 0) return;
+    if (riders[0].race_results.length > 1) {
+      riders.sort((a, b) => {
+        // Urutan berdasarkan jumlah lap terbanyak (descending)
+        if (a.race_results.length !== b.race_results.length) {
+          return b.race_results.length - a.race_results.length;
+        }
 
-  if (data.length === 0) {
-    return (
-      <table className="table table-zebra w-full font-bold text-center">
-        <thead>
-          <tr>
-            <th>POS</th>
-            <th>Rider</th>
-            <th>Team</th>
-            <th>BIB</th>
-            <th>TIME</th>
-            <th>GAP</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td colSpan={6}>No Data</td>
-          </tr>
-        </tbody>
-      </table>
-    );
-  }
-  const riders: Rider[] = data;
-  const lap = riders[0].categories.lap;
-  const start_time = riders[0].categories.start_time;
-  const categoryName = riders[0].categories.name;
+        // Jika jumlah lap sama, urutan berdasarkan waktu tercepat (ascending)
+        if (
+          a.race_results[a.race_results.length - 1].finish_time !==
+          b.race_results[b.race_results.length - 1].finish_time
+        ) {
+          return (
+            Number(a.race_results[a.race_results.length - 1].finish_time) -
+            Number(b.race_results[b.race_results.length - 1].finish_time)
+          );
+        }
+      });
 
-  if (riders[0].race_results.length > 1) {
-    riders.sort((a, b) => {
-      // Urutan berdasarkan jumlah lap terbanyak (descending)
-      if (a.race_results.length !== b.race_results.length) {
-        return b.race_results.length - a.race_results.length;
-      }
+      riders.sort((a, b) => {
+        const keteranganOrder = {
+          FINISHER: 1,
+          RUN: 2,
+          DNF: 3,
+          DSQ: 4,
+          DNS: 5,
+        };
+        return keteranganOrder[a.note] - keteranganOrder[b.note];
+      });
 
-      // Jika jumlah lap sama, urutan berdasarkan waktu tercepat (ascending)
-      if (
-        a.race_results[a.race_results.length - 1].finish_time !==
-        b.race_results[b.race_results.length - 1].finish_time
-      ) {
-        return (
-          Number(a.race_results[a.race_results.length - 1].finish_time) -
-          Number(b.race_results[b.race_results.length - 1].finish_time)
-        );
-      }
-    });
+      setRiders(riders);
+    }
+  }, [riders]);
 
-    riders.sort((a, b) => {
-      const keteranganOrder = {
-        FINISHER: 1,
-        RUN: 2,
-        DNF: 3,
-        DSQ: 4,
-        DNS: 5,
-      };
-      return keteranganOrder[a.note] - keteranganOrder[b.note];
-    });
-  }
+  useEffect(() => {
+    if (note === "") return;
+    const checkedRiders = Object.keys(checkboxes)
+      .filter((key) => checkboxes[key])
+      .map((key) => parseInt(key));
+
+    if (checkedRiders.length === 0) {
+      toast("Please select category first", {
+        duration: 3000,
+        icon: "ℹ️",
+      });
+      return;
+    }
+
+    const data = {
+      riders_id: checkedRiders,
+    };
+
+    updateRidersNoteInParcel(note, data)
+      .then((res) => {
+        if (res.status === "Server Error") {
+          toast.error(res.message);
+          return;
+        }
+
+        toast.success(res.message);
+      })
+      .catch((err) => {
+        toast.error(err.message);
+      })
+      .finally(() => {
+        getRidersRunInCategory(id)
+          .then((res) => {
+            if (res.status === "Server Error") {
+              toast.error(res.message);
+              return;
+            }
+            setRiders(res.data);
+            setStart_time(res.data[0].categories.start_time);
+            setLap(res.data[0].categories.lap);
+            onCategoryNameChange(res.data[0].categories.name);
+          })
+          .catch((err) => {
+            toast.error(err.message);
+          });
+        setCheckboxes({});
+      });
+  }, [note]);
 
   return (
     <table className="table table-zebra w-full text-center">
@@ -98,6 +148,7 @@ export default function Page({ id }: { id: number }) {
             <th key={index}>Lap {index + 1}</th>
           ))}
           <th>Note</th>
+          <th>#</th>
         </tr>
       </thead>
       <tbody className="font-bold">
@@ -154,7 +205,18 @@ export default function Page({ id }: { id: number }) {
               <td key={index}>00:00:00.000</td>
             ))}
             <td>
-              <SelectRiderNote idRider={pembalap.id} note={pembalap.note} />
+              <SelectRiderNote
+                idRider={pembalap.id}
+                note={pembalap.note ? pembalap.note : "RUN"}
+              />
+            </td>
+            <td>
+              <input
+                type="checkbox"
+                className="checkbox checkbox-primary"
+                checked={checkboxes[pembalap.id] || false}
+                onChange={() => handleCheckboxChange(pembalap.id.toString())}
+              />
             </td>
           </tr>
         ))}

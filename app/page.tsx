@@ -1,184 +1,366 @@
-import SelectTheme from "@/components/SelectTheme";
+import NavbarHome from "@/components/NavbarHome";
+import { getCategoryInRace } from "@/services/categories";
+import { Category, CategoryResponse } from "@/services/categories/data-type";
+import { unixToHHMM } from "@/services/converter";
 import Image from "next/image";
+import Link from "next/link";
 
-export default function Home() {
-  const products = [
-    {
-      id: 1,
-      name: "Basic Tee",
-      href: "#",
-      imageSrc:
-        "https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-01.jpg",
-      imageAlt: "Front of men's Basic Tee in black.",
-      price: "$35",
-      color: "Black",
-    },
-    {
-      id: 2,
-      name: "Basic Tee",
-      href: "#",
-      imageSrc:
-        "https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-01.jpg",
-      imageAlt: "Front of men's Basic Tee in black.",
-      price: "$35",
-      color: "Black",
-    },
-    {
-      id: 3,
-      name: "Basic Tee",
-      href: "#",
-      imageSrc:
-        "https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-01.jpg",
-      imageAlt: "Front of men's Basic Tee in black.",
-      price: "$35",
-      color: "Black",
-    },
-  ];
+export default async function Home() {
+  const CategoriesResponse: CategoryResponse = await getCategoryInRace();
+  const categories: Category[] = CategoriesResponse.data
+    ? CategoriesResponse.data
+    : [];
+
   return (
     <main>
       {/* <div className="container mx-auto"> */}
-      <div className="navbar bg-primary shadow-xl rounded-b-xl">
-        <div className="navbar-start">
-          <div className="dropdown">
-            <label tabIndex={0} className="btn btn-ghost btn-circle">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M4 6h16M4 12h16M4 18h7"
-                />
-              </svg>
-            </label>
-            <ul
-              tabIndex={0}
-              className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
-            >
-              <li>
-                <a>Homepage</a>
-              </li>
-              <li>
-                <a>Portfolio</a>
-              </li>
-              <li>
-                <a>About</a>
-              </li>
-              <li>
-                <SelectTheme />
-              </li>
-            </ul>
-          </div>
-        </div>
-        <div className="navbar-center">
-          <a className="btn btn-ghost normal-case text-xl">
-            IDLaps
-            <svg
-              className="h-5 w-5 fill-current rotate-45 inline-block"
-              width={24}
-              height={24}
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 448 512"
-            >
-              <path d="M32 0C49.7 0 64 14.3 64 32V48l69-17.2c38.1-9.5 78.3-5.1 113.5 12.5c46.3 23.2 100.8 23.2 147.1 0l9.6-4.8C423.8 28.1 448 43.1 448 66.1V345.8c0 13.3-8.3 25.3-20.8 30l-34.7 13c-46.2 17.3-97.6 14.6-141.7-7.4c-37.9-19-81.3-23.7-122.5-13.4L64 384v96c0 17.7-14.3 32-32 32s-32-14.3-32-32V400 334 64 32C0 14.3 14.3 0 32 0zM64 187.1l64-13.9v65.5L64 252.6V318l48.8-12.2c5.1-1.3 10.1-2.4 15.2-3.3V238.7l38.9-8.4c8.3-1.8 16.7-2.5 25.1-2.1l0-64c13.6 .4 27.2 2.6 40.4 6.4l23.6 6.9v66.7l-41.7-12.3c-7.3-2.1-14.8-3.4-22.3-3.8v71.4c21.8 1.9 43.3 6.7 64 14.4V244.2l22.7 6.7c13.5 4 27.3 6.4 41.3 7.4V194c-7.8-.8-15.6-2.3-23.2-4.5l-40.8-12v-62c-13-3.8-25.8-8.8-38.2-15c-8.2-4.1-16.9-7-25.8-8.8v72.4c-13-.4-26 .8-38.7 3.6L128 173.2V98L64 114v73.1zM320 335.7c16.8 1.5 33.9-.7 50-6.8l14-5.2V251.9l-7.9 1.8c-18.4 4.3-37.3 5.7-56.1 4.5v77.4zm64-149.4V115.4c-20.9 6.1-42.4 9.1-64 9.1V194c13.9 1.4 28 .5 41.7-2.6l22.3-5.2z" />
-            </svg>
-          </a>
-        </div>
-        <div className="navbar-end">
-          <button className="btn btn-ghost btn-circle">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
-          </button>
-          <button className="btn btn-ghost btn-circle">
-            <div className="indicator">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-                />
-              </svg>
-              <span className="badge badge-xs badge-secondary indicator-item"></span>
-            </div>
-          </button>
-        </div>
-      </div>
+      <NavbarHome />
       <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 lg:max-w-7xl lg:px-8">
         <h2 className="text-2xl font-bold tracking-tight">
-          Race Today - Cihuni Hills @ BSD{" "}
+          Race Today - {categories.length > 0 && categories[0].events.name}
         </h2>
 
         <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8 group">
-          {products.map((product) => (
-            // <div key={product.id} className="group relative">
-            //   <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-80">
-            //     <img
-            //       src={product.imageSrc}
-            //       alt={product.imageAlt}
-            //       className="h-full w-full object-cover object-center lg:h-full lg:w-full"
-            //     />
-            //   </div>
-            //   <div className="mt-4 flex justify-between">
-            //     <div>
-            //       <h3 className="text-sm text-gray-700">
-            //         <a href={product.href}>
-            //           <span aria-hidden="true" className="absolute inset-0" />
-            //           {product.name}
-            //         </a>
-            //       </h3>
-            //       <p className="mt-1 text-sm text-gray-500">{product.color}</p>
-            //     </div>
-            //     <p className="text-sm font-medium text-gray-900">
-            //       {product.price}
-            //     </p>
-            //   </div>
-            // </div>
-            <div className="card bg-base-100 shadow-2xl max-w-sm mx-auto group/item hover:bg-base-200  hover:cursor-pointer">
-              <figure>
-                <Image
-                  src="https://source.unsplash.com/random/384x227"
-                  alt="Shoes"
-                  width={384}
-                  height={227}
-                />
-              </figure>
-              <div className="card-body ">
-                <h2 className="card-title">
-                  Shoes!
-                  <div className="badge badge-secondary">NEW</div>
-                </h2>
-                <p>If a dog chews shoes whose shoes does he choose?</p>
-                <div className="card-actions justify-end">
-                  <div className="badge badge-outline">Fashion</div>
-                  <div className="badge badge-outline">Products</div>
+          {categories.length > 0 &&
+            categories.map((category) => (
+              <Link href={"racenow/" + category.id}>
+                <div className="card bg-base-100 shadow-2xl max-w-sm mx-auto group/item hover:bg-base-200  hover:cursor-pointer">
+                  <figure>
+                    <Image
+                      src={"/img/" + category.sex + ".jpg"}
+                      alt={category.sex + " image"}
+                      width={384}
+                      height={200}
+                      style={{
+                        height: "200px !important",
+                        width: "384px !important",
+                        objectFit: "cover",
+                      }}
+                    />
+                  </figure>
+                  <div className="card-body">
+                    <h2 className="card-title">
+                      {category.name}
+                      <div
+                        className={
+                          category.run
+                            ? "badge badge-success"
+                            : "badge badge-danger"
+                        }
+                      >
+                        {category.run ? "Race" : "Stop"}
+                      </div>
+                    </h2>
+                    <p>{category.description}</p>
+                    <div className="card-actions justify-around">
+                      <div className="flex align-middle">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="32"
+                          height="32"
+                          version="1"
+                          id="sports"
+                        >
+                          <g color="#000">
+                            <path
+                              fill="none"
+                              stroke="#373748"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              d="M655.195 1398.779h12.269v8.487h-12.269z"
+                              overflow="visible"
+                              transform="rotate(14.987 5630.576 -1710.95) skewX(-.026)"
+                            ></path>
+                            <path
+                              fill="#f2f2f2"
+                              stroke="#373748"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              d="M653.459 1398.779h1.737v20.747h-1.737z"
+                              overflow="visible"
+                              transform="rotate(14.987 5630.576 -1710.95) skewX(-.026)"
+                            ></path>
+                            <path
+                              fill="#f2f2f2"
+                              d="m19.98 6.781 1.823.488-.488 1.822-1.824-.488z"
+                              overflow="visible"
+                            ></path>
+                            <path
+                              fill="#373748"
+                              d="m21.802 7.269 1.824.488-.488 1.822-1.824-.488z"
+                              overflow="visible"
+                            ></path>
+                            <path
+                              fill="#f2f2f2"
+                              d="m23.626 7.757 1.824.488-.488 1.822-1.824-.488z"
+                              overflow="visible"
+                            ></path>
+                            <path
+                              fill="#373748"
+                              d="m25.45 8.245 1.824.489-.489 1.821-1.823-.488z"
+                              overflow="visible"
+                            ></path>
+                            <path
+                              fill="#f2f2f2"
+                              d="m27.273 8.733 1.824.489-.489 1.821-1.824-.488z"
+                              overflow="visible"
+                            ></path>
+                            <path
+                              fill="#373748"
+                              d="m29.097 9.222 1.823.488-.488 1.822-1.824-.489zM19.491 8.603l1.824.488-.489 1.822-1.823-.489z"
+                              overflow="visible"
+                            ></path>
+                            <path
+                              fill="#f2f2f2"
+                              d="m21.314 9.09 1.824.489-.489 1.821-1.824-.488z"
+                              overflow="visible"
+                            ></path>
+                            <path
+                              fill="#373748"
+                              d="m23.138 9.579 1.824.488-.489 1.822-1.824-.489z"
+                              overflow="visible"
+                            ></path>
+                            <path
+                              fill="#f2f2f2"
+                              d="m24.962 10.067 1.823.488-.488 1.822-1.824-.488z"
+                              overflow="visible"
+                            ></path>
+                            <path
+                              fill="#373748"
+                              d="m26.784 10.555 1.824.488-.488 1.822-1.824-.488z"
+                              overflow="visible"
+                            ></path>
+                            <path
+                              fill="#f2f2f2"
+                              d="m28.608 11.043 1.824.489-.489 1.821-1.823-.488zM19.003 10.424l1.823.489-.488 1.821-1.824-.488z"
+                              overflow="visible"
+                            ></path>
+                            <path
+                              fill="#373748"
+                              d="m20.825 10.912 1.824.488-.488 1.822-1.824-.488z"
+                              overflow="visible"
+                            ></path>
+                            <path
+                              fill="#f2f2f2"
+                              d="m22.65 11.4 1.823.489-.489 1.821-1.823-.488z"
+                              overflow="visible"
+                            ></path>
+                            <path
+                              fill="#373748"
+                              d="m24.473 11.889 1.824.488-.489 1.822-1.824-.489z"
+                              overflow="visible"
+                            ></path>
+                            <path
+                              fill="#f2f2f2"
+                              d="m26.296 12.377 1.824.488-.489 1.822-1.824-.489z"
+                              overflow="visible"
+                            ></path>
+                            <path
+                              fill="#373748"
+                              d="m28.12 12.865 1.823.488-.488 1.822-1.824-.488zM18.514 12.246l1.824.488-.489 1.822-1.824-.488z"
+                              overflow="visible"
+                            ></path>
+                            <path
+                              fill="#f2f2f2"
+                              d="m20.337 12.734 1.824.488-.489 1.822-1.824-.489z"
+                              overflow="visible"
+                            ></path>
+                            <path
+                              fill="#373748"
+                              d="m22.16 13.222 1.824.488-.488 1.822-1.824-.488z"
+                              overflow="visible"
+                            ></path>
+                            <path
+                              fill="#f2f2f2"
+                              d="m23.984 13.71 1.824.489-.488 1.821-1.824-.488z"
+                              overflow="visible"
+                            ></path>
+                            <path
+                              fill="#373748"
+                              d="m25.807 14.198 1.824.489-.489 1.821-1.823-.488z"
+                              overflow="visible"
+                            ></path>
+                            <path
+                              fill="#f2f2f2"
+                              d="m27.631 14.687 1.824.488-.489 1.821-1.824-.488z"
+                              overflow="visible"
+                            ></path>
+                            <path
+                              fill="none"
+                              stroke="#373748"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              d="M139.567 1536.834h12.269v8.487h-12.269z"
+                              overflow="visible"
+                              transform="matrix(-.96598 .2586 .25904 .96587 -250.925 -1514.265)"
+                            ></path>
+                            <path
+                              fill="#f2f2f2"
+                              stroke="#373748"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              d="M137.831 1536.834h1.737v20.747h-1.737z"
+                              overflow="visible"
+                              transform="matrix(-.96598 .2586 .25904 .96587 -250.925 -1514.265)"
+                            ></path>
+                            <path
+                              fill="#f2f2f2"
+                              d="m12.024 6.786-1.824.488.488 1.822 1.824-.489z"
+                              overflow="visible"
+                            ></path>
+                            <path
+                              fill="#373748"
+                              d="m10.2 7.274-1.824.488.489 1.822 1.823-.488z"
+                              overflow="visible"
+                            ></path>
+                            <path
+                              fill="#f2f2f2"
+                              d="m8.377 7.762-1.824.488.489 1.822 1.824-.488z"
+                              overflow="visible"
+                            ></path>
+                            <path
+                              fill="#373748"
+                              d="M6.553 8.25 4.73 8.74l.489 1.821 1.824-.488z"
+                              overflow="visible"
+                            ></path>
+                            <path
+                              fill="#f2f2f2"
+                              d="m4.73 8.738-1.823.489.488 1.821 1.824-.488z"
+                              overflow="visible"
+                            ></path>
+                            <path
+                              fill="#373748"
+                              d="m2.907 9.227-1.824.488.488 1.821 1.824-.488zM12.512 8.607l-1.824.489.489 1.821L13 10.43z"
+                              overflow="visible"
+                            ></path>
+                            <path
+                              fill="#f2f2f2"
+                              d="m10.688 9.096-1.823.488.488 1.822 1.824-.489z"
+                              overflow="visible"
+                            ></path>
+                            <path
+                              fill="#373748"
+                              d="m8.866 9.584-1.824.488.488 1.822 1.824-.489z"
+                              overflow="visible"
+                            ></path>
+                            <path
+                              fill="#f2f2f2"
+                              d="m7.042 10.072-1.824.488.489 1.822 1.823-.488z"
+                              overflow="visible"
+                            ></path>
+                            <path
+                              fill="#373748"
+                              d="m5.219 10.56-1.824.488.489 1.822 1.824-.488z"
+                              overflow="visible"
+                            ></path>
+                            <path
+                              fill="#f2f2f2"
+                              d="m3.395 11.048-1.824.488.489 1.822 1.824-.488zM13 10.43l-1.823.487.488 1.822 1.824-.488z"
+                              overflow="visible"
+                            ></path>
+                            <path
+                              fill="#373748"
+                              d="m11.177 10.917-1.824.489.489 1.821 1.823-.488z"
+                              overflow="visible"
+                            ></path>
+                            <path
+                              fill="#f2f2f2"
+                              d="m9.354 11.405-1.824.489.489 1.821 1.824-.488z"
+                              overflow="visible"
+                            ></path>
+                            <path
+                              fill="#373748"
+                              d="m7.53 11.894-1.823.488.488 1.821 1.824-.488z"
+                              overflow="visible"
+                            ></path>
+                            <path
+                              fill="#f2f2f2"
+                              d="m5.708 12.382-1.824.488.488 1.821 1.824-.488z"
+                              overflow="visible"
+                            ></path>
+                            <path
+                              fill="#373748"
+                              d="m3.884 12.87-1.824.488.489 1.822 1.823-.489zM13.49 12.25l-1.825.489.489 1.822 1.824-.489z"
+                              overflow="visible"
+                            ></path>
+                            <path
+                              fill="#f2f2f2"
+                              d="m11.665 12.739-1.823.488.488 1.822 1.824-.488z"
+                              overflow="visible"
+                            ></path>
+                            <path
+                              fill="#373748"
+                              d="m9.843 13.227-1.824.488.488 1.822 1.824-.488z"
+                              overflow="visible"
+                            ></path>
+                            <path
+                              fill="#f2f2f2"
+                              d="m8.019 13.715-1.824.488.489 1.822 1.823-.488z"
+                              overflow="visible"
+                            ></path>
+                            <path
+                              fill="#373748"
+                              d="m6.196 14.203-1.824.488.489 1.822 1.824-.488z"
+                              overflow="visible"
+                            ></path>
+                            <path
+                              fill="#f2f2f2"
+                              d="m4.372 14.691-1.823.489L3.037 17l1.824-.488z"
+                              overflow="visible"
+                            ></path>
+                          </g>
+                        </svg>
+                        <h1 className="text-xl">{category.lap}</h1>
+                      </div>
+                      <div className="flex align-middle">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="32"
+                          height="32"
+                          id="olympics"
+                        >
+                          <path
+                            d="M-4.5 1021.362c-4.7 0-8.5 3.8-8.5 8.5v13c0 4.7 3.8 8.5 8.5 8.5s8.5-3.8 8.5-8.5v-13c0-4.7-3.8-8.5-8.5-8.5zm0 1c4.164 0 7.5 3.337 7.5 7.5v13c0 4.164-3.336 7.5-7.5 7.5a7.473 7.473 0 0 1-7.5-7.5v-2.5h2v2.5c0 3.039 2.462 5.5 5.5 5.5s5.5-2.461 5.5-5.5v-13c0-3.038-2.462-5.5-5.5-5.5a5.499 5.499 0 0 0-5.5 5.5v9.5h-2v-9.5c0-4.163 3.336-7.5 7.5-7.5zm0 3a4.48 4.48 0 0 1 4.5 4.5v13a4.48 4.48 0 0 1-4.5 4.5 4.48 4.48 0 0 1-4.5-4.5v-3.5h2v3.5c0 1.377 1.124 2.5 2.5 2.5s2.5-1.123 2.5-2.5v-13c0-1.376-1.124-2.5-2.5-2.5a2.506 2.506 0 0 0-2.5 2.5v8.5h-2v-8.5a4.48 4.48 0 0 1 4.5-4.5zm0 3c.84 0 1.5.66 1.5 1.5v13c0 .84-.66 1.5-1.5 1.5s-1.5-.66-1.5-1.5v-13c0-.84.66-1.5 1.5-1.5z"
+                            color="#000"
+                            font-family="sans-serif"
+                            font-weight="400"
+                            overflow="visible"
+                            transform="translate(21 -1020.362)"
+                            style={{
+                              lineHeight: "normal",
+                              textIndent: "0",
+                              textAlign: "start",
+                              textDecorationLine: "none",
+                              textDecorationStyle: "solid",
+                              textDecorationColor: "#000",
+                              textTransform: "none",
+                              blockProgression: "tb",
+                              whiteSpace: "normal",
+                              isolation: "auto",
+                              mixBlendMode: "normal",
+                              solidColor: "#000",
+                              solidOpacity: "1",
+                            }}
+                          ></path>
+                        </svg>
+                        <h1 className="text-xl">{category.distance} KM</h1>
+                      </div>
+                    </div>
+                    <div className="card-actions justify-end">
+                      <div className="badge badge-outline mt-0.5">
+                        {unixToHHMM(category.start_sch)}
+                      </div>
+                      <Image
+                        src={"/img/" + category.sex + ".png"}
+                        height={24}
+                        width={24}
+                        alt={category.sex + " simbol"}
+                      ></Image>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          ))}
+              </Link>
+            ))}
         </div>
       </div>
       {/* </div> */}
