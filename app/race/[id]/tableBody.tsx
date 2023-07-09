@@ -22,7 +22,6 @@ export default function TableBody({ id }: { id: number }) {
     return <></>;
   }
   if (!data) return <></>;
-  console.log(data);
 
   if (data.length === 0) {
     return (
@@ -105,7 +104,7 @@ export default function TableBody({ id }: { id: number }) {
           <tr key={index}>
             <td>{index + 1}</td>
             <td>{pembalap.name}</td>
-            <td>{pembalap.teams.name}</td>
+            <td>{pembalap.team_name}</td>
             <td>{pembalap.bib}</td>
             <td>{convertDateTimeMillis(start_time)}</td>
             {pembalap.total_waktu === "0" && <td>00:00:00.000</td>}
