@@ -33,7 +33,7 @@ const TableBody = ({
       .map((key) => parseInt(key));
 
     if (checkedCategories.length === 0) {
-      toast("Please select category first", {
+      toast("Please check category first", {
         duration: 3000,
         icon: "ℹ️",
       });

@@ -26,9 +26,7 @@ export async function getRidersRunInCategory(id: number) {
   });
 
   if (!res.ok) throw new Error(res.statusText);
-  const result = await res.json();
-  // console.log(result.data[0]);
-  return result.data;
+  return res.json();
 }
 
 export async function getRidersByCategory(id: string) {
@@ -52,6 +50,23 @@ export async function updateRiderNote(idRider: number, note: string) {
     }
   );
   if (!res.ok) throw new Error(res.statusText);
+
+  return res.json();
+}
+
+export async function updateRidersNoteInParcel(note: string, body: any) {
+  const res = await fetch(`http://localhost:3001/riders/parcel/${note}`, {
+    cache: "no-store",
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    throw new Error(res.statusText);
+  }
 
   return res.json();
 }
