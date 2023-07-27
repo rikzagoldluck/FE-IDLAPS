@@ -149,7 +149,23 @@ export default function TableBody({ id }: { id: number }) {
               }).map((_, index) => (
                 <td key={index}>00:00:00.000</td>
               ))}
-              <td>{pembalap.note == null ? "RUN" : pembalap.note}</td>
+              <td
+                className={
+                  pembalap.run === "STOP"
+                    ? "text-red-500"
+                    : pembalap.run === "RUN"
+                    ? "text-green-500"
+                    : pembalap.run === "DNS"
+                    ? "text-yellow-500"
+                    : pembalap.run === "DNF"
+                    ? "text-blue-500"
+                    : pembalap.run === "DSQ"
+                    ? "text-purple-500"
+                    : "text-gray-500"
+                }
+              >
+                {pembalap.run}
+              </td>
             </tr>
           ))}
         </tbody>

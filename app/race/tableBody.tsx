@@ -133,23 +133,39 @@ const TableBody = ({
             </td>
             <td>{category.distance}</td>
             <td>{category.lap}</td>
-            <td>
-              <input
-                data-id={category.id}
-                type="checkbox"
-                className="toggle toggle-success"
-                checked={category.run}
-                readOnly
-              />
-            </td>
-            <td>
-              <input
-                type="checkbox"
-                className="checkbox checkbox-primary"
-                checked={checkboxes[category.id] || false}
-                onChange={() => handleCheckboxChange(category.id.toString())}
-              />
-            </td>
+            <td>{category.riderCount}</td>
+            {category.independent_start && category.start_time === "0" && (
+              <td colSpan={2}>INDEPENDENT START</td>
+            )}
+
+            {(category.independent_start && category.start_time !== "0") ||
+            !category.independent_start ? (
+              <td>
+                <input
+                  data-id={category.id}
+                  type="checkbox"
+                  className="toggle toggle-success"
+                  checked={category.run}
+                  readOnly
+                />
+              </td>
+            ) : (
+              ""
+            )}
+
+            {(category.independent_start && category.start_time !== "0") ||
+            !category.independent_start ? (
+              <td>
+                <input
+                  type="checkbox"
+                  className="checkbox checkbox-primary"
+                  checked={checkboxes[category.id] || false}
+                  onChange={() => handleCheckboxChange(category.id.toString())}
+                />
+              </td>
+            ) : (
+              ""
+            )}
           </tr>
         ))
       ) : (

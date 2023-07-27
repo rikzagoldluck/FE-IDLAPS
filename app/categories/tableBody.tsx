@@ -4,7 +4,7 @@ import { convertDateTimeMillis } from "@/services/converter";
 import Link from "next/link";
 import React, { SyntheticEvent, useCallback, useEffect, useState } from "react";
 import DeleteCategory from "./deleteCategories";
-import { getCategories, getCategoriesByEvent } from "@/services/categories";
+import { getCategoriesByEvent } from "@/services/categories";
 import toast from "react-hot-toast";
 import Image from "next/image";
 
@@ -30,10 +30,11 @@ const tableBody = ({
           toast.error(res.message);
           return;
         }
+        console.log(res.data);
         setCategories(res.data);
       })
       .catch((err) =>
-        toast.error("Failed to fetch categories by event :   " + err)
+        toast.error("Failed to fetch categories by event : " + err)
       );
   }, [eventSelected, changed, added]);
   return (
@@ -44,7 +45,10 @@ const tableBody = ({
             <td>{index + 1}</td>
             <td>{category.name}</td>
             <td>{category.description == "" ? "-" : category.description}</td>
-            <td>{convertDateTimeMillis(category.start_sch)}</td>
+            <td>
+              {convertDateTimeMillis(category.start_sch)}{" "}
+              {category.independent_start && "🚵"}
+            </td>
             <td>
               {convertDateTimeMillis(category.end_sch) === "Invalid date" ||
               convertDateTimeMillis(category.end_sch) === "01/01/1970 07:00:00"
@@ -59,8 +63,9 @@ const tableBody = ({
                 height={48}
               />
             </td>
-            <td>{category.distance}</td>
-            <td>{category.lap}</td>
+            <td className="text-center">{category.distance}</td>
+            <td className="text-center">{category.lap}</td>
+            <td className="text-center">{category.riderCount}</td>
             <td className="flex gap-3">
               {/* <UpdateCategory {...category} /> */}
               <Link href={`/categories/${category.id}`}>

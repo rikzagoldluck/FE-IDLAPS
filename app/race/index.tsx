@@ -6,13 +6,15 @@ import TableBody from "./tableBody";
 import { SelectBoxContext } from "../provider/SelectBox";
 
 export default function index() {
-  const selectBox = useContext(SelectBoxContext)
-  const [eventSelected, setEventSeleceted] = useState(selectBox.selectedEvent != "" ? selectBox.selectedEvent : "");
+  const selectBox = useContext(SelectBoxContext);
+  const [eventSelected, setEventSeleceted] = useState(
+    selectBox.selectedEvent != "" ? selectBox.selectedEvent : ""
+  );
   const [buttonState, setButtonState] = useState("");
 
   const handleSelect = (id: string) => {
     selectBox.setSelectedEvent(id);
-    setEventSeleceted(id);  
+    setEventSeleceted(id);
   };
 
   const handleClick = (button: string) => {
@@ -88,6 +90,7 @@ export default function index() {
               <th>Sex</th>
               <th>Distance(KM)</th>
               <th>Lap(s)</th>
+              <th>Participant(s)</th>
               <th>Run</th>
               <th>#</th>
             </tr>

@@ -1,6 +1,7 @@
 "use client";
 
 import { updateRiderNote } from "@/services/riders";
+import { RunType, RunTypeConst } from "@/services/riders/data-type";
 import { useRouter } from "next/navigation";
 import { SyntheticEvent, useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
@@ -12,15 +13,6 @@ export default function SelectRiderNote({
   idRider: number;
   note: string;
 }) {
-  // const [riderNote, setRiderNote] = useState([
-  //   { id: 2, note: "FINISHER" },
-  //   { id: 3, note: "DNF" },
-  //   { id: 4, note: "DNS" },
-  //   { id: 5, note: "DSQ" },
-  // { id: 6, note: "OTL" },
-  // { id: 7, note: "LAP" },
-  // ]);
-
   const [noteInternal, setNote] = useState(note ? note : "RUN");
 
   useEffect(() => {
@@ -42,15 +34,31 @@ export default function SelectRiderNote({
   }
   return (
     <select
-      className="select w-32"
+      className={
+        "select w-32 text-white " +
+        (noteInternal === "STOP"
+          ? "bg-red-500"
+          : noteInternal === "RUN"
+          ? "bg-green-500"
+          : noteInternal === "DNS"
+          ? "bg-yellow-500"
+          : noteInternal === "DNF"
+          ? "bg-blue-500"
+          : noteInternal === "DSQ"
+          ? "bg-purple-500"
+          : "bg-gray-500")
+      }
       onChange={handleSelect}
       value={noteInternal}
     >
-      <option value={"RUN"}>RUN 🏃‍♂️</option>
-      <option value={"FINISHER"}>FINISHER 🏁</option>
-      <option value={"DNF"}>DNF</option>
-      <option value={"DNS"}>DNS</option>
-      <option value={"DSQ"}>DSQ</option>
+      {Object.keys(RunTypeConst).map((key) => {
+        const value = RunTypeConst[key as keyof typeof RunTypeConst];
+        return (
+          <option key={value} value={value}>
+            {RunType[value]}
+          </option>
+        );
+      })}
     </select>
   );
 }

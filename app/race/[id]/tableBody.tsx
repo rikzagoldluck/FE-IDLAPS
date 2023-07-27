@@ -38,6 +38,11 @@ export default function TableBody({
           toast.error(res.message);
           return;
         }
+
+        if (res.data.length === 0) {
+          toast.error("No riders found");
+          return;
+        }
         setRiders(res.data);
         setStart_time(res.data[0].categories.start_time);
         setLap(res.data[0].categories.lap);
@@ -147,7 +152,7 @@ export default function TableBody({
           {Array.from({ length: lap }).map((_, index) => (
             <th key={index}>Lap {index + 1}</th>
           ))}
-          <th>Note</th>
+          <th>RUN</th>
           <th>#</th>
         </tr>
       </thead>
@@ -205,10 +210,7 @@ export default function TableBody({
               <td key={index}>00:00:00.000</td>
             ))}
             <td>
-              <SelectRiderNote
-                idRider={pembalap.id}
-                note={pembalap.note ? pembalap.note : "RUN"}
-              />
+              <SelectRiderNote idRider={pembalap.id} note={pembalap.run} />
             </td>
             <td>
               <input

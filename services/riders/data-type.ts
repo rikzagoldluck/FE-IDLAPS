@@ -15,7 +15,7 @@ export type Rider = {
   mac_no: string;
   note: string;
   note_1: string;
-  run: boolean;
+  run: RunType;
   event_id: number;
   events: Event;
   category_id: number;
@@ -40,3 +40,21 @@ export type RiderResponseDataObj = {
   message: string;
   data: Rider;
 };
+
+export enum RunType {
+  STOP = "STOP",
+  RUN = "RUN",
+  FINISHER = "FINISHER",
+  DNF = "DNF",
+  DNS = "DNS",
+  DSQ = "DSQ",
+}
+
+export const RunTypeConst = {
+  STOP: "STOP",
+  RUN: "RUN",
+  FINISHER: "FINISHER",
+  DNF: "DNF",
+  DNS: "DNS",
+  DSQ: "DSQ",
+} as const;
