@@ -6,8 +6,10 @@ import AddCategory from "./addCategories";
 import { SelectBoxContext } from "../provider/SelectBox";
 
 export default function index() {
-  const selectBox = useContext(SelectBoxContext)
-  const [eventSelected, setEventSeleceted] = useState(selectBox.selectedEvent != "" ? selectBox.selectedEvent : "");
+  const selectBox = useContext(SelectBoxContext);
+  const [eventSelected, setEventSeleceted] = useState(
+    selectBox.selectedEvent != "" ? selectBox.selectedEvent : ""
+  );
 
   const [added, setAdded] = useState("");
   const handleSelect = (id: string) => {
@@ -15,7 +17,6 @@ export default function index() {
     setEventSeleceted(id);
   };
 
-  
   return (
     <div className="py-10 px-10">
       <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
@@ -45,6 +46,7 @@ export default function index() {
               <th>Sex</th>
               <th>Distance</th>
               <th>Lap(s)</th>
+              <th>Participants</th>
               <th>Action</th>
             </tr>
           </thead>

@@ -2,6 +2,7 @@
 import { SyntheticEvent, useState } from "react";
 import TableBody from "./TableBody";
 import SelectRiderNote from "@/components/SelectRiderNote";
+import { RunTypeConst } from "@/services/riders/data-type";
 
 export default function index({ id }: { id: number }) {
   const [categoryName, setCategoryName] = useState<string>("");
@@ -22,16 +23,19 @@ export default function index({ id }: { id: number }) {
           id="button-container"
         >
           <select
-            className="select w-32"
+            className="select w-48"
             onChange={handleSelect}
             value={noteInternal}
           >
-            <option value={""}>Select Note</option>
-            <option value={"RUN"}>RUN 🏃‍♂️</option>
-            <option value={"FINISHER"}>FINISHER 🏁</option>
-            <option value={"DNF"}>DNF</option>
-            <option value={"DNS"}>DNS</option>
-            <option value={"DSQ"}>DSQ</option>
+            <option value="">SELECT ACTION</option>
+            {Object.keys(RunTypeConst).map((key) => {
+              const value = RunTypeConst[key as keyof typeof RunTypeConst];
+              return (
+                <option key={value} value={value}>
+                  {value}
+                </option>
+              );
+            })}
           </select>
         </div>
       </div>

@@ -10,7 +10,6 @@ export default async function Home() {
   const categories: Category[] = CategoriesResponse.data
     ? CategoriesResponse.data
     : [];
-
   return (
     <main>
       {/* <div className="container mx-auto"> */}
@@ -356,6 +355,7 @@ export default async function Home() {
                         width={24}
                         alt={category.sex + " simbol"}
                       ></Image>
+                      {category._count.riders}
                     </div>
                   </div>
                 </div>

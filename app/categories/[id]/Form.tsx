@@ -20,6 +20,7 @@ export default function Form({ category }: { category: Category }) {
   const [lap, setLap] = useState(category.lap);
   const [run, setRun] = useState(category.run);
   const [event_id, setEventId] = useState(category.event_id);
+  const [is, setIs] = useState(category.independent_start ? "ya" : "tidak");
   const [events, setEvents] = useState<EventResponse>({
     message: "",
     data: [],
@@ -52,11 +53,12 @@ export default function Form({ category }: { category: Category }) {
         name,
         description,
         start_sch: dateTimeToUnix(start_time),
-        end_sch: dateTimeToUnix(end_time),
+        end_sch: dateTimeToUnix(end_time.toString()),
         sex,
         distance,
         lap,
         run,
+        independent_start: is == "ya" ? true : false,
         event_id,
       }),
     });
@@ -76,6 +78,9 @@ export default function Form({ category }: { category: Category }) {
 
   function handleRadioButton(value: string) {
     setSex(value);
+  }
+  function handleRadioButtonIs(value: string) {
+    setIs(value);
   }
 
   function handleSelect(e: SyntheticEvent) {
@@ -262,6 +267,34 @@ export default function Form({ category }: { category: Category }) {
                   onChange={(e) => setLap(Number(e.target.value))}
                 />
               </div>
+            </div>
+
+            <div className="sm:col-span-3">
+              <label className="label-text">Independent Start</label>
+              {/* <div className="mt-2"> */}
+              <label className="label cursor-pointer" htmlFor="ya">
+                <span className="label-text">Ya</span>
+                <input
+                  id="ya"
+                  type="radio"
+                  name="radio-tidakya"
+                  className="radio checked:bg-blue"
+                  checked={is == "ya" && true}
+                  onChange={() => handleRadioButtonIs("ya")}
+                />
+              </label>
+              <label className="label cursor-pointer" htmlFor="tidak">
+                <span className="label-text">Tidak</span>
+                <input
+                  id="tidak"
+                  type="radio"
+                  name="radio-tidakya"
+                  className="radio checked:bg-blue"
+                  checked={is == "tidak" && true}
+                  onChange={() => handleRadioButtonIs("tidak")}
+                />
+              </label>
+              {/* </div> */}
             </div>
           </div>
         </div>

@@ -1,4 +1,5 @@
 import { Event } from "../events/data-type";
+import { Rider } from "../riders/data-type";
 
 export type Category = {
   id: number;
@@ -15,6 +16,9 @@ export type Category = {
   race_today: boolean;
   event_id: number;
   events: Event;
+  riders: Rider[];
+  riderCount: number;
+  independent_start: boolean;
 };
 
 export type CategoryResponse = {
