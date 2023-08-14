@@ -70,3 +70,19 @@ export async function updateRidersNoteInParcel(note: string, body: any) {
 
   return res.json();
 }
+export async function updateRidersAndClear(body: any) {
+  const res = await fetch(`http://localhost:3001/riders/clear`, {
+    cache: "no-store",
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    throw new Error(res.statusText);
+  }
+
+  return res.json();
+}
