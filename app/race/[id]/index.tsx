@@ -7,6 +7,9 @@ import { RunTypeConst } from "@/services/riders/data-type";
 export default function index({ id }: { id: number }) {
   const [categoryName, setCategoryName] = useState<string>("");
   const [noteInternal, setNoteInternal] = useState<string>("");
+
+  const [buttonState, setButtonState] = useState("");
+
   function handleSelect(e: SyntheticEvent) {
     const { value } = e.currentTarget;
     setNoteInternal(value);
@@ -14,6 +17,11 @@ export default function index({ id }: { id: number }) {
       setNoteInternal("");
     }, 1000);
   }
+
+  const handleClick = (button: string) => {
+    setButtonState(button + "-" + Date.now());
+  };
+
   return (
     <div className="py-10 px-10">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 text-center justify-between mb-6">
@@ -37,6 +45,12 @@ export default function index({ id }: { id: number }) {
               );
             })}
           </select>
+          <button
+            className="btn btn-outline btn-warning"
+            onClick={() => handleClick("clear")}
+          >
+            CLEAR
+          </button>
         </div>
       </div>
       <div className="overflow-x-auto">
@@ -46,6 +60,7 @@ export default function index({ id }: { id: number }) {
             setCategoryName(cat);
           }}
           note={noteInternal}
+          buttonState={buttonState}
         />
       </div>
     </div>

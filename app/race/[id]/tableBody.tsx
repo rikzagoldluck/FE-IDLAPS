@@ -4,6 +4,7 @@ import SelectRiderNote from "@/components/SelectRiderNote";
 import { convertDateTimeMillis, timeDifference } from "@/services/converter";
 import {
   getRidersRunInCategory,
+  updateRidersAndClear,
   updateRidersNoteInParcel,
 } from "@/services/riders";
 import { Rider } from "@/services/riders/data-type";
@@ -14,12 +15,15 @@ export default function TableBody({
   id,
   onCategoryNameChange,
   note,
+  buttonState,
 }: {
   id: number;
   onCategoryNameChange: (name: string) => void;
   note: string;
+  buttonState: string;
 }) {
   const [riders, setRiders] = useState<Rider[]>([]);
+  const [ridersRes, setRidersRes] = useState<Rider[]>([]);
   const [lap, setLap] = useState<number>(1);
   const [start_time, setStart_time] = useState<any>("0");
   const [checkboxes, setCheckboxes] = useState<{ [key: string]: boolean }>({});
@@ -55,7 +59,11 @@ export default function TableBody({
 
   useEffect(() => {
     if (riders.length === 0) return;
-    if (riders[0].race_results.length > 1) {
+    const allRaceResultsZero = riders.every(
+      (rider) => rider.race_results.length === 0
+    );
+
+    if (!allRaceResultsZero) {
       riders.sort((a, b) => {
         // Urutan berdasarkan jumlah lap terbanyak (descending)
         if (a.race_results.length !== b.race_results.length) {
@@ -73,7 +81,6 @@ export default function TableBody({
           );
         }
       });
-
       riders.sort((a, b) => {
         const keteranganOrder = {
           FINISHER: 1,
@@ -81,12 +88,29 @@ export default function TableBody({
           DNF: 3,
           DSQ: 4,
           DNS: 5,
+          STOP: 6,
         };
-        return keteranganOrder[a.note] - keteranganOrder[b.note];
+        return (
+          parseInt(keteranganOrder[a.run]) - parseInt(keteranganOrder[b.run])
+        );
       });
-
-      setRiders(riders);
+    } else {
+      riders.sort((a, b) => {
+        const keteranganOrder = {
+          FINISHER: 1,
+          RUN: 2,
+          DNF: 3,
+          DSQ: 4,
+          DNS: 5,
+          STOP: 6,
+        };
+        return (
+          parseInt(keteranganOrder[a.run]) - parseInt(keteranganOrder[b.run])
+        );
+      });
     }
+
+    setRidersRes(riders);
   }, [riders]);
 
   useEffect(() => {
@@ -96,7 +120,7 @@ export default function TableBody({
       .map((key) => parseInt(key));
 
     if (checkedRiders.length === 0) {
-      toast("Please select category first", {
+      toast("Please select rider first", {
         duration: 3000,
         icon: "ℹ️",
       });
@@ -138,6 +162,54 @@ export default function TableBody({
       });
   }, [note]);
 
+  useEffect(() => {
+    if (buttonState === "") return;
+    const checkedRiders = Object.keys(checkboxes)
+      .filter((key) => checkboxes[key])
+      .map((key) => parseInt(key));
+
+    if (checkedRiders.length === 0) {
+      toast("Please check rider first", {
+        duration: 3000,
+        icon: "ℹ️",
+      });
+      return;
+    }
+    const data = {
+      riders: checkedRiders,
+    };
+
+    updateRidersAndClear(data)
+      .then((res) => {
+        if (res.status === "Server Error") {
+          toast.error(res.message);
+          return;
+        }
+
+        toast.success(res.message);
+      })
+      .catch((err) => {
+        toast.error(err.message);
+      })
+      .finally(() => {
+        getRidersRunInCategory(id)
+          .then((res) => {
+            if (res.status === "Server Error") {
+              toast.error(res.message);
+              return;
+            }
+            setRiders(res.data);
+            setStart_time(res.data[0].categories.start_time);
+            setLap(res.data[0].categories.lap);
+            onCategoryNameChange(res.data[0].categories.name);
+          })
+          .catch((err) => {
+            toast.error(err.message);
+          });
+        setCheckboxes({});
+      });
+  }, [buttonState]);
+
   return (
     <table className="table table-zebra w-full text-center">
       <thead>
@@ -157,7 +229,7 @@ export default function TableBody({
         </tr>
       </thead>
       <tbody className="font-bold">
-        {riders.map((pembalap: Rider, index: number) => (
+        {ridersRes.map((pembalap: Rider, index: number) => (
           <tr key={index}>
             <td>{index + 1}</td>
             <td>{pembalap.name}</td>

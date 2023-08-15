@@ -46,7 +46,11 @@ export default function TableBody({ id }: { id: number }) {
   const start_time = riders[0].categories.start_time;
   const categoryName = riders[0].categories.name;
 
-  if (riders[0].race_results.length > 1) {
+  const allRaceResultsZero = riders.every(
+    (rider) => rider.race_results.length === 0
+  );
+
+  if (!allRaceResultsZero) {
     riders.sort((a, b) => {
       // Urutan berdasarkan jumlah lap terbanyak (descending)
       if (a.race_results.length !== b.race_results.length) {
@@ -64,16 +68,32 @@ export default function TableBody({ id }: { id: number }) {
         );
       }
     });
-
     riders.sort((a, b) => {
-      const keteranganOrder: any = {
+      const keteranganOrder = {
         FINISHER: 1,
         RUN: 2,
         DNF: 3,
         DSQ: 4,
         DNS: 5,
+        STOP: 6,
       };
-      return keteranganOrder[a.note] - keteranganOrder[b.note];
+      return (
+        parseInt(keteranganOrder[a.run]) - parseInt(keteranganOrder[b.run])
+      );
+    });
+  } else {
+    riders.sort((a, b) => {
+      const keteranganOrder = {
+        FINISHER: 1,
+        RUN: 2,
+        DNF: 3,
+        DSQ: 4,
+        DNS: 5,
+        STOP: 6,
+      };
+      return (
+        parseInt(keteranganOrder[a.run]) - parseInt(keteranganOrder[b.run])
+      );
     });
   }
 
