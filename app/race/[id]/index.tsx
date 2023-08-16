@@ -1,5 +1,6 @@
 "use client";
 import { SyntheticEvent, useState } from "react";
+//Import TableBody from "c:/FE-IDLAPS/app/race/[id]/TableBody";
 import TableBody from "./TableBody";
 import SelectRiderNote from "@/components/SelectRiderNote";
 import { RunTypeConst } from "@/services/riders/data-type";
