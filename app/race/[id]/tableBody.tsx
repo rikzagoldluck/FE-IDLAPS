@@ -14,6 +14,7 @@ import {
 import { Rider } from "@/services/riders/data-type";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function TableBody({
   id,
@@ -40,7 +41,6 @@ export default function TableBody({
       [checkboxName]: !prevCheckboxes[checkboxName],
     }));
   };
-
   useEffect(() => {
     getRidersRunInCategory(id)
       .then((res) => {
@@ -187,49 +187,60 @@ export default function TableBody({
   }, [buttonState]);
 
   return (
-    <table className="table table-zebra w-full text-center" ref={tableRef}>
-      <thead>
-        <tr>
-          <th>POS</th>
-          <th>Rider</th>
-          <th>Team</th>
-          <th>BIB</th>
-          <th>START</th>
-          {/* {ridersRes[0].categories.independent_start && <th>ACC TIME</th>} */}
-          <th>GAP</th>
-          {Array.from({ length: lap }).map((_, index) => (
-            <th key={index}>Lap {index + 1}</th>
-          ))}
-          <th style={{ display: "none" }}>STATUS</th>
-          <th>RUN</th>
-          <th>#</th>
-        </tr>
-      </thead>
-      <tbody className="font-bold">
-        {ridersRes.map((pembalap: Rider, index: number) => (
-          <tr key={index}>
-            <td>{index + 1}</td>
-            <td>{pembalap.name}</td>
-            <td>{pembalap.team_name}</td>
-            <td>{pembalap.bib}</td>
-            {/* START TIME */}
-            {pembalap.categories.independent_start && (
-              <td>
-                {pembalap.start_waktu == "0"
-                  ? "NOT RUN"
-                  : convertDateTimeMillis(pembalap.start_waktu)}
-              </td>
-            )}
-            {!pembalap.categories.independent_start && (
-              <td>
-                {start_time == "0"
-                  ? "NOT RUN"
-                  : convertDateTimeMillis(start_time)}
-              </td>
-            )}
+    <AnimatePresence>
+      <table className="table table-zebra w-full text-center" ref={tableRef}>
+        <thead>
+          <motion.tr
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 50 }}
+          >
+            <th>POS</th>
+            <th>Rider</th>
+            <th>Team</th>
+            <th>BIB</th>
+            <th>START</th>
+            {/* {ridersRes[0].categories.independent_start && <th>ACC TIME</th>} */}
+            <th>GAP</th>
+            {Array.from({ length: lap }).map((_, index) => (
+              <th key={index}>Lap {index + 1}</th>
+            ))}
+            <th style={{ display: "none" }}>STATUS</th>
+            <th>RUN</th>
+            <th>#</th>
+          </motion.tr>
+        </thead>
+        <tbody className="font-bold">
+          {ridersRes.map((pembalap: Rider, index: number) => (
+            <motion.tr
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 50 }}
+              key={index}
+            >
+              {/* <tr > */}
+              <td>{index + 1}</td>
+              <td>{pembalap.name}</td>
+              <td>{pembalap.team_name}</td>
+              <td>{pembalap.bib}</td>
+              {/* START TIME */}
+              {pembalap.categories.independent_start && (
+                <td>
+                  {pembalap.start_waktu == "0"
+                    ? "NOT RUN"
+                    : convertDateTimeMillis(pembalap.start_waktu)}
+                </td>
+              )}
+              {!pembalap.categories.independent_start && (
+                <td>
+                  {start_time == "0"
+                    ? "NOT RUN"
+                    : convertDateTimeMillis(start_time)}
+                </td>
+              )}
 
-            {/* TOTAL TIME */}
-            {/* {pembalap.total_waktu === "0" && <td>00:00:00.000</td>}
+              {/* TOTAL TIME */}
+              {/* {pembalap.total_waktu === "0" && <td>00:00:00.000</td>}
             {pembalap.total_waktu !== "0" &&
               !pembalap.categories.independent_start && (
                 <td>
@@ -255,105 +266,109 @@ export default function TableBody({
                 </td>
               )} */}
 
-            {/* GAP */}
-            {pembalap.total_waktu === "0" && index == 0 && <td>-</td>}
-            {pembalap.total_waktu === "0" && index != 0 && (
-              <td>+00:00:00.000</td>
-            )}
-
-            {pembalap.total_waktu !== "0" &&
-              !pembalap.categories.independent_start && (
-                <td>
-                  {timeDifference(start_time, Number(pembalap.total_waktu)) ===
-                  "NaN:NaN:NaN"
-                    ? "00:00:00.000"
-                    : index != 0 &&
-                      ridersRes[index - 1].lap_count === pembalap.lap_count
-                    ? "+" +
-                      timeDifference(
-                        Number(ridersRes[index - 1].total_waktu),
-                        Number(pembalap.total_waktu)
-                      )
-                    : "-"}
-                </td>
+              {/* GAP */}
+              {pembalap.total_waktu === "0" && index == 0 && <td>-</td>}
+              {pembalap.total_waktu === "0" && index != 0 && (
+                <td>+00:00:00.000</td>
               )}
 
-            {pembalap.total_waktu !== "0" &&
-              pembalap.categories.independent_start && (
-                <td>
-                  {timeDifference(
-                    Number(pembalap.start_waktu),
-                    Number(pembalap.total_waktu)
-                  ) === "NaN:NaN:NaN"
-                    ? "00:00:00.000"
-                    : index != 0 &&
-                      ridersRes[index - 1].lap_count === pembalap.lap_count
-                    ? "+" +
-                      calculateTimeGap(
-                        timeDifference(
-                          Number(ridersRes[index - 1].start_waktu),
-                          Number(ridersRes[index - 1].total_waktu)
-                        ),
-                        timeDifference(
-                          Number(pembalap.start_waktu),
-                          Number(pembalap.total_waktu)
-                        )
-                      )
-                    : "-"}
-                </td>
-              )}
-
-            {/* LAP TIME */}
-            {!pembalap.categories.independent_start &&
-              pembalap.race_results.map((lap, lapIndex) => {
-                return (
-                  <td key={lapIndex}>
-                    {timeDifference(start_time, Number(lap.finish_time)) ===
-                    "NaN:NaN:NaN"
-                      ? "00:00:00.000"
-                      : timeDifference(start_time, Number(lap.finish_time))}
-                  </td>
-                );
-              })}
-
-            {pembalap.categories.independent_start &&
-              pembalap.race_results.map((lap, lapIndex) => {
-                return (
-                  <td key={lapIndex}>
+              {pembalap.total_waktu !== "0" &&
+                !pembalap.categories.independent_start && (
+                  <td>
                     {timeDifference(
-                      Number(pembalap.start_waktu),
-                      Number(lap.finish_time)
+                      start_time,
+                      Number(pembalap.total_waktu)
                     ) === "NaN:NaN:NaN"
                       ? "00:00:00.000"
-                      : timeDifference(
-                          Number(pembalap.start_waktu),
-                          Number(lap.finish_time)
-                        )}
+                      : index != 0 &&
+                        ridersRes[index - 1].lap_count === pembalap.lap_count
+                      ? "+" +
+                        timeDifference(
+                          Number(ridersRes[index - 1].total_waktu),
+                          Number(pembalap.total_waktu)
+                        )
+                      : "-"}
                   </td>
-                );
-              })}
+                )}
 
-            {Array.from({
-              length: lap - pembalap.race_results.length,
-            }).map((_, index) => (
-              <td key={index}>00:00:00.000</td>
-            ))}
-            <td style={{ display: "none" }}> {pembalap.run}</td>
+              {pembalap.total_waktu !== "0" &&
+                pembalap.categories.independent_start && (
+                  <td>
+                    {timeDifference(
+                      Number(pembalap.start_waktu),
+                      Number(pembalap.total_waktu)
+                    ) === "NaN:NaN:NaN"
+                      ? "00:00:00.000"
+                      : index != 0 &&
+                        ridersRes[index - 1].lap_count === pembalap.lap_count
+                      ? "+" +
+                        calculateTimeGap(
+                          timeDifference(
+                            Number(ridersRes[index - 1].start_waktu),
+                            Number(ridersRes[index - 1].total_waktu)
+                          ),
+                          timeDifference(
+                            Number(pembalap.start_waktu),
+                            Number(pembalap.total_waktu)
+                          )
+                        )
+                      : "-"}
+                  </td>
+                )}
 
-            <td>
-              <SelectRiderNote idRider={pembalap.id} note={pembalap.run} />
-            </td>
-            <td>
-              <input
-                type="checkbox"
-                className="checkbox checkbox-primary"
-                checked={checkboxes[pembalap.id] || false}
-                onChange={() => handleCheckboxChange(pembalap.id.toString())}
-              />
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+              {/* LAP TIME */}
+              {!pembalap.categories.independent_start &&
+                pembalap.race_results.map((lap, lapIndex) => {
+                  return (
+                    <td key={lapIndex}>
+                      {timeDifference(start_time, Number(lap.finish_time)) ===
+                      "NaN:NaN:NaN"
+                        ? "00:00:00.000"
+                        : timeDifference(start_time, Number(lap.finish_time))}
+                    </td>
+                  );
+                })}
+
+              {pembalap.categories.independent_start &&
+                pembalap.race_results.map((lap, lapIndex) => {
+                  return (
+                    <td key={lapIndex}>
+                      {timeDifference(
+                        Number(pembalap.start_waktu),
+                        Number(lap.finish_time)
+                      ) === "NaN:NaN:NaN"
+                        ? "00:00:00.000"
+                        : timeDifference(
+                            Number(pembalap.start_waktu),
+                            Number(lap.finish_time)
+                          )}
+                    </td>
+                  );
+                })}
+
+              {Array.from({
+                length: lap - pembalap.race_results.length,
+              }).map((_, index) => (
+                <td key={index}>00:00:00.000</td>
+              ))}
+              <td style={{ display: "none" }}> {pembalap.run}</td>
+
+              <td>
+                <SelectRiderNote idRider={pembalap.id} note={pembalap.run} />
+              </td>
+              <td>
+                <input
+                  type="checkbox"
+                  className="checkbox checkbox-primary"
+                  checked={checkboxes[pembalap.id] || false}
+                  onChange={() => handleCheckboxChange(pembalap.id.toString())}
+                />
+              </td>
+              {/* </tr> */}
+            </motion.tr>
+          ))}
+        </tbody>
+      </table>
+    </AnimatePresence>
   );
 }
