@@ -1,8 +1,9 @@
 "use client";
-import { SyntheticEvent, useState } from "react";
+import { SyntheticEvent, useState, useRef } from "react";
 import TableBody from "./TableBody";
 import SelectRiderNote from "@/components/SelectRiderNote";
 import { RunTypeConst } from "@/services/riders/data-type";
+import { useDownloadExcel } from "react-export-table-to-excel";
 
 export default function index({ id }: { id: number }) {
   const [categoryName, setCategoryName] = useState<string>("");
@@ -21,6 +22,13 @@ export default function index({ id }: { id: number }) {
   const handleClick = (button: string) => {
     setButtonState(button + "-" + Date.now());
   };
+  const tableRef = useRef(null);
+
+  const { onDownload } = useDownloadExcel({
+    currentTableRef: tableRef.current,
+    filename: categoryName,
+    sheet: "RACE RESULT",
+  });
 
   return (
     <div className="py-10 px-10">
@@ -51,6 +59,11 @@ export default function index({ id }: { id: number }) {
           >
             CLEAR
           </button>
+
+          <button className="btn btn-outline btn-success" onClick={onDownload}>
+            {" "}
+            Export excel{" "}
+          </button>
         </div>
       </div>
       <div className="overflow-x-auto">
@@ -61,6 +74,7 @@ export default function index({ id }: { id: number }) {
           }}
           note={noteInternal}
           buttonState={buttonState}
+          tableRef={tableRef}
         />
       </div>
     </div>

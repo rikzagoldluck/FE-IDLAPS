@@ -1,6 +1,10 @@
 "use client";
 
-import { timeDifference, unixToHHMM } from "@/services/converter";
+import {
+  calculateTimeGap,
+  timeDifference,
+  unixToHHMM,
+} from "@/services/converter";
 import { getRidersRunInCategory } from "@/services/riders";
 import { Rider } from "@/services/riders/data-type";
 import useSWR from "swr";
@@ -46,56 +50,26 @@ export default function TableBody({ id }: { id: number }) {
   const start_time = riders[0].categories.start_time;
   const categoryName = riders[0].categories.name;
 
-  const allRaceResultsZero = riders.every(
-    (rider) => rider.race_results.length === 0
-  );
+  riders.sort((a, b) => {
+    // First, sort by run_status (RUN > DSQ > DNF > DNS)
+    const runStatusOrder = ["FINISHER", "RUN", "DNF", "DNS", "DSQ", "STOP"];
+    const runStatusComparison =
+      runStatusOrder.indexOf(a.run) - runStatusOrder.indexOf(b.run);
 
-  if (!allRaceResultsZero) {
-    riders.sort((a, b) => {
-      // Urutan berdasarkan jumlah lap terbanyak (descending)
-      if (a.race_results.length !== b.race_results.length) {
-        return b.race_results.length - a.race_results.length;
-      }
+    if (runStatusComparison !== 0) {
+      return runStatusComparison;
+    }
 
-      // Jika jumlah lap sama, urutan berdasarkan waktu tercepat (ascending)
-      if (
-        a.race_results[a.race_results.length - 1].finish_time !==
-        b.race_results[b.race_results.length - 1].finish_time
-      ) {
-        return (
-          Number(a.race_results[a.race_results.length - 1].finish_time) -
-          Number(b.race_results[b.race_results.length - 1].finish_time)
-        );
-      }
-    });
-    riders.sort((a, b) => {
-      const keteranganOrder = {
-        FINISHER: 1,
-        RUN: 2,
-        DNF: 3,
-        DSQ: 4,
-        DNS: 5,
-        STOP: 6,
-      };
-      return (
-        parseInt(keteranganOrder[a.run]) - parseInt(keteranganOrder[b.run])
-      );
-    });
-  } else {
-    riders.sort((a, b) => {
-      const keteranganOrder = {
-        FINISHER: 1,
-        RUN: 2,
-        DNF: 3,
-        DSQ: 4,
-        DNS: 5,
-        STOP: 6,
-      };
-      return (
-        parseInt(keteranganOrder[a.run]) - parseInt(keteranganOrder[b.run])
-      );
-    });
-  }
+    // Then, sort by lap_count in ascending order
+    if (a.lap_count !== b.lap_count) {
+      return b.lap_count - a.lap_count;
+    }
+
+    const aTotalTime = parseInt(a.total_waktu, 10);
+    const bTotalTime = parseInt(b.total_waktu, 10);
+
+    return aTotalTime - bTotalTime;
+  });
 
   return (
     <>
@@ -108,7 +82,7 @@ export default function TableBody({ id }: { id: number }) {
             <th>Team</th>
             <th>BIB</th>
             <th>START</th>
-            <th>TOTAL TIME</th>
+            {/* <th>TOTAL TIME</th> */}
             <th>GAP</th>
             {Array.from({ length: lap }).map((_, index) => (
               <th key={index}>Lap {index + 1}</th>
@@ -123,8 +97,13 @@ export default function TableBody({ id }: { id: number }) {
               <td>{pembalap.name}</td>
               <td>{pembalap.team_name}</td>
               <td>{pembalap.bib}</td>
-              <td>{unixToHHMM(start_time) + ":00"}</td>
-              {pembalap.total_waktu === "0" && <td>00:00:00.000</td>}
+              <td>
+                {pembalap.categories.independent_start
+                  ? unixToHHMM(pembalap.start_waktu)
+                  : unixToHHMM(start_time)}
+                :00
+              </td>
+              {/* {pembalap.total_waktu === "0" && <td>00:00:00.000</td>}
               {pembalap.total_waktu !== "0" && (
                 <td>
                   {timeDifference(start_time, Number(pembalap.total_waktu)) ===
@@ -132,37 +111,86 @@ export default function TableBody({ id }: { id: number }) {
                     ? "00:00:00"
                     : timeDifference(start_time, Number(pembalap.total_waktu))}
                 </td>
-              )}
+              )} */}
 
               {pembalap.total_waktu === "0" && index == 0 && <td>-</td>}
               {pembalap.total_waktu === "0" && index != 0 && (
                 <td>+00:00:00.000</td>
               )}
-              {pembalap.total_waktu !== "0" && (
-                <td>
-                  {timeDifference(start_time, Number(pembalap.total_waktu)) ===
-                  "NaN:NaN:NaN"
-                    ? "00:00:00.000"
-                    : index != 0
-                    ? "+" +
-                      timeDifference(
-                        Number(riders[index - 1].total_waktu),
-                        Number(pembalap.total_waktu)
-                      )
-                    : "-"}
-                </td>
-              )}
 
-              {pembalap.race_results.map((lap, lapIndex) => {
-                return (
-                  <td key={lapIndex}>
-                    {timeDifference(start_time, Number(lap.finish_time)) ===
-                    "NaN:NaN:NaN"
+              {pembalap.total_waktu !== "0" &&
+                !pembalap.categories.independent_start && (
+                  <td>
+                    {timeDifference(
+                      start_time,
+                      Number(pembalap.total_waktu)
+                    ) === "NaN:NaN:NaN"
                       ? "00:00:00.000"
-                      : timeDifference(start_time, Number(lap.finish_time))}
+                      : index != 0 &&
+                        riders[index - 1].lap_count === pembalap.lap_count
+                      ? "+" +
+                        timeDifference(
+                          Number(riders[index - 1].total_waktu),
+                          Number(pembalap.total_waktu)
+                        )
+                      : "-"}
                   </td>
-                );
-              })}
+                )}
+
+              {pembalap.total_waktu !== "0" &&
+                pembalap.categories.independent_start && (
+                  <td>
+                    {timeDifference(
+                      Number(pembalap.start_waktu),
+                      Number(pembalap.total_waktu)
+                    ) === "NaN:NaN:NaN"
+                      ? "00:00:00.000"
+                      : index != 0 &&
+                        riders[index - 1].lap_count === pembalap.lap_count
+                      ? "+" +
+                        calculateTimeGap(
+                          timeDifference(
+                            Number(riders[index - 1].start_waktu),
+                            Number(riders[index - 1].total_waktu)
+                          ),
+                          timeDifference(
+                            Number(pembalap.start_waktu),
+                            Number(pembalap.total_waktu)
+                          )
+                        )
+                      : "-"}
+                  </td>
+                )}
+
+              {/* LAP TIME */}
+              {!pembalap.categories.independent_start &&
+                pembalap.race_results.map((lap, lapIndex) => {
+                  return (
+                    <td key={lapIndex}>
+                      {timeDifference(start_time, Number(lap.finish_time)) ===
+                      "NaN:NaN:NaN"
+                        ? "00:00:00.000"
+                        : timeDifference(start_time, Number(lap.finish_time))}
+                    </td>
+                  );
+                })}
+
+              {pembalap.categories.independent_start &&
+                pembalap.race_results.map((lap, lapIndex) => {
+                  return (
+                    <td key={lapIndex}>
+                      {timeDifference(
+                        Number(pembalap.start_waktu),
+                        Number(lap.finish_time)
+                      ) === "NaN:NaN:NaN"
+                        ? "00:00:00.000"
+                        : timeDifference(
+                            Number(pembalap.start_waktu),
+                            Number(lap.finish_time)
+                          )}
+                    </td>
+                  );
+                })}
 
               {Array.from({
                 length: lap - pembalap.race_results.length,

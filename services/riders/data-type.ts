@@ -21,6 +21,8 @@ export type Rider = {
   category_id: number;
   categories: Category[];
   race_results: RaceResult[];
+  lap_count: number;
+  start_waktu: string;
 };
 
 type RaceResult = {
