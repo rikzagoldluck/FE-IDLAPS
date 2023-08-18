@@ -74,6 +74,27 @@ export const timeDifference = (start: number, end: number) => {
   return formattedTime;
 };
 
+const timeToMilliseconds = (timeString: string) => {
+  const [hours, minutes, seconds, milliseconds] = timeString
+    .split(/[:.]/)
+    .map(Number);
+  return hours * 3600000 + minutes * 60000 + seconds * 1000 + milliseconds;
+};
+
+export const calculateTimeGap = (time1: string, time2: string) => {
+  const time1Ms = timeToMilliseconds(time1);
+  const time2Ms = timeToMilliseconds(time2);
+  const gapMs = Math.abs(time1Ms - time2Ms);
+
+  const gapMinutes = Math.floor(gapMs / 60000);
+  const gapSeconds = Math.floor((gapMs % 60000) / 1000);
+  const gapMilliseconds = gapMs % 1000;
+
+  return `${gapMinutes}:${gapSeconds
+    .toString()
+    .padStart(2, "0")}.${gapMilliseconds.toString().padStart(3, "0")}`;
+};
+
 export const unixToDDMMYYYY = (unix: string) => {
   var momentDate = moment.unix(parseInt(unix) / 1000);
 
