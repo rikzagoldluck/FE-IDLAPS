@@ -114,5 +114,5 @@ export const unixToHHMM = (unix: string) => {
   moment.tz(timeZone);
 
   // Format the date as DD/MMM/YYYY
-  return momentDate.format("HH:mm");
+  return momentDate.format("HH:mm:ss");
 };
