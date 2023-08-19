@@ -1,5 +1,5 @@
 "use client";
-import { SyntheticEvent, useState, useRef } from "react";
+import { SyntheticEvent, useRef, useState } from "react";
 import TableBody from "./TableBody";
 import SelectRiderNote from "@/components/SelectRiderNote";
 import { RunTypeConst } from "@/services/riders/data-type";
